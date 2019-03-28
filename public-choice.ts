@@ -3,9 +3,10 @@ import {createTemplate, newRenderContext} from 'xtal-element/utils.js';
 import 'xtal-material/xtal-radio-group-md.js';
 import {define} from 'xtal-element/define.js';
 import {PurrSistMyJson} from 'purr-sist/purr-sist-myjson.js';
-import {decorate, attribs, HasAttribs} from 'trans-render/decorate.js';
+import {decorate} from 'trans-render/decorate.js';
 import { PurrSist } from '../purr-sist/purr-sist';
 import 'p-d.p-u/p-d.js';
+import {XtalFrappeChart} from 'xtal-frappe-chart/xtal-frappe-chart.js';
 const masterListId = 'yv8uy';
 const mainTemplate = createTemplate(/* html */`
 <!-- <purr-sist-myjson id="master" read store-id="yv8uy"></purr-sist-myjson> -->
@@ -20,9 +21,12 @@ const mainTemplate = createTemplate(/* html */`
     <purr-sist-myjson read guid="951c3b69-3e16-4f62-915b-ba3ca33a8e77"></purr-sist-myjson>
     <p-d on="value-changed" prop="value"></p-d>
     <purr-sist-myjson write guid="951c3b69-3e16-4f62-915b-ba3ca33a8e77"></purr-sist-myjson>
+    <p-d on="value-changed" prop="rawData"></p-d>
+    <xtal-frappe-chart></xtal-frappe-chart>
 </main>
 `);
 const already_voted = 'already-voted';
+
 
 export class PublicChoice extends XtalElement{
     static get is(){return 'public-choice';}
@@ -33,11 +37,12 @@ export class PublicChoice extends XtalElement{
         main:{
             section: 'hi',
             [PurrSistMyJson.is]: ({target}) => decorate<PurrSistMyJson>(target as PurrSistMyJson, {
-                masterListId: '/' + masterListId,
-            } as HasAttribs<PurrSistMyJson>),
-            [PurrSistMyJson.is + '[write]']: ({target}) => decorate<PurrSistMyJson>(target as PurrSistMyJson,
-                {} as HasAttribs<PurrSistMyJson>, {
-                    props:{
+                propVals:{
+                    masterListId: '/' + masterListId,
+                } as PurrSistMyJson,
+            }),
+            [PurrSistMyJson.is + '[write]']: ({target}) => decorate<PurrSistMyJson>(target as PurrSistMyJson, {
+                    propDefs:{
                         pc_vote: null
                     },
                     methods:{
@@ -56,7 +61,18 @@ export class PublicChoice extends XtalElement{
                             }
                         }
                     }
-                })
+                }
+            ),
+            [XtalFrappeChart.is]: ({target}) => decorate<XtalFrappeChart>(target as XtalFrappeChart,{
+                propDefs:{
+                    rawData:null
+                },
+                methods:{
+                    onPropsChange: function(){
+                        debugger;
+                    }
+                }
+            })
         }
         
     });
@@ -68,12 +84,12 @@ export class PublicChoice extends XtalElement{
         if(!(<any>self)[masterListId]){
             const purrSistMaster = document.createElement(PurrSistMyJson.is) as PurrSistMyJson;
             decorate<PurrSistMyJson>(purrSistMaster, {
-                [attribs]:{
+                attribs:{
                     id: masterListId,
                     read: true,
                     'store-id': 'yv8uy'
                 }
-            } as HasAttribs<PurrSistMyJson>);
+            });
             document.head.appendChild(purrSistMaster);
         }
         super.connectedCallback();

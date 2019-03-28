@@ -9,10 +9,10 @@
   "dependencies": {
     "xtal-element": "0.0.42",
     "xtal-material": "0.0.56",
-    "xtal-frappe-chart": "0.0.22",
+    "xtal-frappe-chart": "0.0.23",
     "purr-sist": "0.0.38",
     "p-d.p-u": "0.0.110",
-    "trans-render": "0.0.88"
+    "trans-render": "0.0.94"
   },
   "repository": {
     "type": "git",
