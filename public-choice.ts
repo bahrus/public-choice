@@ -81,6 +81,7 @@ export class PublicChoice extends XtalElement{
                                     if(key.startsWith('_')) continue;
                                     labels.push(key);
                                 }
+                                if(labels.length === 0) return;
                                 const fd = {
                                     title: 'Votes',
                                     data:{
@@ -89,7 +90,7 @@ export class PublicChoice extends XtalElement{
                                             {
                                                 name: "Votes",
                                                 color: "light-blue",
-                                                values: labels.map(key => data[key])
+                                                values: labels.map(key => isNaN(data[key]) ? 0 : data[key])
                                             }
                                         ]
                                     },
@@ -97,7 +98,7 @@ export class PublicChoice extends XtalElement{
                                     "height": 250,
                                     "isNavigable": true
                                 };
-                                console.log(fd);
+                                //console.log(fd);
                                 (<any>this).data = fd;
                                 break;
                         }
