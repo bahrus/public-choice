@@ -11,7 +11,9 @@ import {appendTag} from 'trans-render/appendTag.js';
 import { DecorateArgs } from '../trans-render/init.d.js';
 import {up} from 'trans-render/hydrate.js';
 import {update} from 'trans-render/update.js';
-const masterListId = 'yv8uy';
+export const masterListKey = Symbol('masterListKey');
+const anySelf = (<any>self);
+
 const mainTemplate = createTemplate(/* html */`
 <main>
     <section role="question">
@@ -36,12 +38,14 @@ export class PublicChoice extends XtalElement{
     get mainTemplate(){
         return mainTemplate;
     }
+    _masterListId!: string;
+
     _initContext = newRenderContext({
         main:{
             //section: 'What is your favorite pronoun?',
             [PurrSistMyJson.is]: ({target}) => decorate(target as HTMLElement, {
                 propVals:{
-                    masterListId: '/' + masterListId,
+                    masterListId: '/' + this._masterListId,
                 } as PurrSistMyJson,
             }),
             ['[data-role="persist"][write]']: ({target}) => decorate(target as HTMLElement, {
@@ -153,10 +157,11 @@ export class PublicChoice extends XtalElement{
 
     connectedCallback(){
         this[up]([guid]);
-        if(!(<any>self)[masterListId]){
+        this._masterListId = anySelf[masterListKey] ? anySelf[masterListKey] as string : 'yv8uy';
+        if(!(<any>self)[this._masterListId]){
             appendTag(document.head, PurrSistMyJson.is, {
                 attribs:{
-                    id: masterListId,
+                    id: this._masterListId,
                     read: true,
                     'store-id': 'yv8uy'
                 }
