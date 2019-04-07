@@ -1,12 +1,14 @@
 import {XtalElement} from 'xtal-element/xtal-element.js';
 import {createTemplate, newRenderContext} from 'xtal-element/utils.js';
 import 'xtal-material/xtal-radio-group-md.js';
-import {define} from 'xtal-element/define.js';
+import {define} from 'trans-render/define.js';
 import {PurrSistMyJson} from 'purr-sist/purr-sist-myjson.js';
 import {decorate} from 'trans-render/decorate.js';
-import { PurrSist } from '../purr-sist/purr-sist';
+import { PurrSist } from 'purr-sist/purr-sist.js';
 import 'p-d.p-u/p-d.js';
 import {XtalFrappeChart} from 'xtal-frappe-chart/xtal-frappe-chart.js';
+import {appendTag} from 'trans-render/appendTag.js';
+import { DecorateArgs } from '../trans-render/init.d.js';
 const masterListId = 'yv8uy';
 const mainTemplate = createTemplate(/* html */`
 <!-- <purr-sist-myjson id="master" read store-id="yv8uy"></purr-sist-myjson> -->
@@ -36,12 +38,12 @@ export class PublicChoice extends XtalElement{
     _initContext = newRenderContext({
         main:{
             section: 'hi',
-            [PurrSistMyJson.is]: ({target}) => decorate<PurrSistMyJson>(target as PurrSistMyJson, {
+            [PurrSistMyJson.is]: ({target}) => decorate(target as HTMLElement, {
                 propVals:{
                     masterListId: '/' + masterListId,
                 } as PurrSistMyJson,
             }),
-            [PurrSistMyJson.is + '[write]']: ({target}) => decorate<PurrSistMyJson>(target as PurrSistMyJson, {
+            [PurrSistMyJson.is + '[write]']: ({target}) => decorate(target as HTMLElement, {
                     propDefs:{
                         pc_vote: null
                     },
@@ -63,13 +65,66 @@ export class PublicChoice extends XtalElement{
                     }
                 }
             ),
-            [XtalFrappeChart.is]: ({target}) => decorate<XtalFrappeChart>(target as XtalFrappeChart,{
+            [XtalFrappeChart.is]: ({target}) => decorate(target as HTMLElement,{
                 propDefs:{
-                    rawData:null
+                    rawData: null,
+                    //frappeFormat: null,
                 },
                 methods:{
-                    onPropsChange: function(){
-                        debugger;
+                    onPropsChange: function(propName: string, data: any){
+                        
+                        switch(propName){
+                            case 'rawData':
+                                const labels = [];
+                                for(const key in data){
+                                    if(key.startsWith('_')) continue;
+                                    labels.push(key);
+                                }
+                                const fd = {
+                                    title: 'Votes',
+                                    data:{
+                                        labels: labels,
+                                        datasets:[
+                                            {
+                                                name: "Votes",
+                                                color: "light-blue",
+                                                values: labels.map(key => data[key])
+                                            }
+                                        ]
+                                    },
+                                    "type": "bar", 
+                                    "height": 250,
+                                    "isNavigable": true
+                                };
+                                console.log(fd);
+                                (<any>this).data = fd;
+                                break;
+                        }
+                        // const frappeData = {
+                        //     "title": "My Awesome Chart",
+                        //     "data": {
+                        //       "labels": ["12am-3am", "3am-6am", "6am-9am", "9am-12pm",
+                        //         "12pm-3pm", "3pm-6pm", "6pm-9pm", "9pm-12am"],
+                          
+                        //       "datasets": [
+                        //         {
+                        //           "name": "Some Data", "color": "light-blue",
+                        //           "values": [25, 40, 30, 35, 8, 52, 17, -4]
+                        //         },
+                        //         {
+                        //           "name": "Another Set", "color": "violet",
+                        //           "values": [25, 50, -10, 15, 18, 32, 27, 14]
+                        //         },
+                        //         {
+                        //           "name": "Yet Another", "color": "blue",
+                        //           "values": [15, 20, -3, -15, 58, 12, -17, 37]
+                        //         }
+                        //       ]
+                        //     },
+                        //     "type": "bar", 
+                        //     "height": 250,
+                        //     "isNavigable": true
+                        //   }
                     }
                 }
             })
@@ -82,15 +137,14 @@ export class PublicChoice extends XtalElement{
 
     connectedCallback(){
         if(!(<any>self)[masterListId]){
-            const purrSistMaster = document.createElement(PurrSistMyJson.is) as PurrSistMyJson;
-            decorate<PurrSistMyJson>(purrSistMaster, {
+            appendTag(document.head, PurrSistMyJson.is, {
                 attribs:{
                     id: masterListId,
                     read: true,
                     'store-id': 'yv8uy'
                 }
-            });
-            document.head.appendChild(purrSistMaster);
+                
+            } as DecorateArgs);
         }
         super.connectedCallback();
 
