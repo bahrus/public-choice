@@ -9,15 +9,15 @@ import 'p-d.p-u/p-d.js';
 import {XtalFrappeChart} from 'xtal-frappe-chart/xtal-frappe-chart.js';
 import {appendTag} from 'trans-render/appendTag.js';
 import { DecorateArgs } from '../trans-render/init.d.js';
+import {up} from 'trans-render/hydrate.js';
 const masterListId = 'yv8uy';
 const mainTemplate = createTemplate(/* html */`
-<!-- <purr-sist-myjson id="master" read store-id="yv8uy"></purr-sist-myjson> -->
 <main>
     <section role="question">
-    Who are you?
+        <slot name="question"></slot>
     </section>
     <xtal-radio-group-md name="pronoun">
-        <slot></slot>
+        <slot name="options"></slot>
     </xtal-radio-group-md>
     <p-d on="value-changed" to="purr-sist-myjson[write]" prop="pc_vote" m="1"></p-d>
     <purr-sist-myjson read guid="951c3b69-3e16-4f62-915b-ba3ca33a8e77"></purr-sist-myjson>
@@ -29,7 +29,7 @@ const mainTemplate = createTemplate(/* html */`
 `);
 const already_voted = 'already-voted';
 
-
+const guid = 'guid';
 export class PublicChoice extends XtalElement{
     static get is(){return 'public-choice';}
     get mainTemplate(){
@@ -37,7 +37,7 @@ export class PublicChoice extends XtalElement{
     }
     _initContext = newRenderContext({
         main:{
-            section: 'hi',
+            //section: 'What is your favorite pronoun?',
             [PurrSistMyJson.is]: ({target}) => decorate(target as HTMLElement, {
                 propVals:{
                     masterListId: '/' + masterListId,
@@ -135,7 +135,12 @@ export class PublicChoice extends XtalElement{
 
     get ready(){return true;}
 
+    static get observedAttributes(){
+        return super.observedAttributes.concat([guid]);
+    }
+
     connectedCallback(){
+        this[up]([guid]);
         if(!(<any>self)[masterListId]){
             appendTag(document.head, PurrSistMyJson.is, {
                 attribs:{
