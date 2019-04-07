@@ -21,9 +21,9 @@ const mainTemplate = createTemplate(/* html */`
         <slot name="options"></slot>
     </xtal-radio-group-md>
     <p-d on="value-changed" to="purr-sist-myjson[write]" prop="pc_vote" m="1"></p-d>
-    <purr-sist-myjson read></purr-sist-myjson>
+    <purr-sist-myjson data-role="persist" read></purr-sist-myjson>
     <p-d on="value-changed" prop="value"></p-d>
-    <purr-sist-myjson write></purr-sist-myjson>
+    <purr-sist-myjson data-role="persist" write></purr-sist-myjson>
     <p-d on="value-changed" prop="rawData"></p-d>
     <xtal-frappe-chart></xtal-frappe-chart>
 </main>
@@ -44,7 +44,7 @@ export class PublicChoice extends XtalElement{
                     masterListId: '/' + masterListId,
                 } as PurrSistMyJson,
             }),
-            [PurrSistMyJson.is + '[write]']: ({target}) => decorate(target as HTMLElement, {
+            ['[data-role="persist"][write]']: ({target}) => decorate(target as HTMLElement, {
                     propDefs:{
                         pc_vote: null
                     },
