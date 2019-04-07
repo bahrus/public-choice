@@ -10,6 +10,7 @@ import {XtalFrappeChart} from 'xtal-frappe-chart/xtal-frappe-chart.js';
 import {appendTag} from 'trans-render/appendTag.js';
 import { DecorateArgs } from '../trans-render/init.d.js';
 import {up} from 'trans-render/hydrate.js';
+import {update} from 'trans-render/update.js';
 const masterListId = 'yv8uy';
 const mainTemplate = createTemplate(/* html */`
 <main>
@@ -20,9 +21,9 @@ const mainTemplate = createTemplate(/* html */`
         <slot name="options"></slot>
     </xtal-radio-group-md>
     <p-d on="value-changed" to="purr-sist-myjson[write]" prop="pc_vote" m="1"></p-d>
-    <purr-sist-myjson read guid="951c3b69-3e16-4f62-915b-ba3ca33a8e77"></purr-sist-myjson>
+    <purr-sist-myjson read></purr-sist-myjson>
     <p-d on="value-changed" prop="value"></p-d>
-    <purr-sist-myjson write guid="951c3b69-3e16-4f62-915b-ba3ca33a8e77"></purr-sist-myjson>
+    <purr-sist-myjson write></purr-sist-myjson>
     <p-d on="value-changed" prop="rawData"></p-d>
     <xtal-frappe-chart></xtal-frappe-chart>
 </main>
@@ -100,31 +101,7 @@ export class PublicChoice extends XtalElement{
                                 (<any>this).data = fd;
                                 break;
                         }
-                        // const frappeData = {
-                        //     "title": "My Awesome Chart",
-                        //     "data": {
-                        //       "labels": ["12am-3am", "3am-6am", "6am-9am", "9am-12pm",
-                        //         "12pm-3pm", "3pm-6pm", "6pm-9pm", "9pm-12am"],
-                          
-                        //       "datasets": [
-                        //         {
-                        //           "name": "Some Data", "color": "light-blue",
-                        //           "values": [25, 40, 30, 35, 8, 52, 17, -4]
-                        //         },
-                        //         {
-                        //           "name": "Another Set", "color": "violet",
-                        //           "values": [25, 50, -10, 15, 18, 32, 27, 14]
-                        //         },
-                        //         {
-                        //           "name": "Yet Another", "color": "blue",
-                        //           "values": [15, 20, -3, -15, 58, 12, -17, 37]
-                        //         }
-                        //       ]
-                        //     },
-                        //     "type": "bar", 
-                        //     "height": 250,
-                        //     "isNavigable": true
-                        //   }
+
                     }
                 }
             })
@@ -133,7 +110,41 @@ export class PublicChoice extends XtalElement{
     });
     get initContext(){return this._initContext;}
 
-    get ready(){return true;}
+    _updateContext = newRenderContext({
+        main:{
+            //section: 'What is your favorite pronoun?',
+            [PurrSistMyJson.is]: ({target}) => decorate(target as HTMLElement, {
+                attribs:{
+                    [guid]: this._guid,
+                },
+            }),
+        }
+    })
+    get updateContext(){
+        this._updateContext.update = update;
+        return this._updateContext;
+    }
+
+    _guid!: string;
+    get guid(){
+        return this._guid;
+    }
+    set guid(nv){
+        this.attr(guid, nv);
+    }
+
+    attributeChangedCallback(n: string, ov: string, nv: string){
+        switch(n){
+            case guid:
+                this._guid = nv;
+                break;
+        }
+        super.attributeChangedCallback(n, ov, nv);
+    }
+    
+    get ready(){
+        return this._guid !== undefined;
+    }
 
     static get observedAttributes(){
         return super.observedAttributes.concat([guid]);
