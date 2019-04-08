@@ -63,7 +63,7 @@ export class PublicChoice extends XtalElement{
                                     }
                                     newVal[val]++;
                                     _this.newVal = {...newVal};
-                                    console.log(newVal);
+                                    //console.log(newVal);
                                     break;
                             }
                         }
@@ -163,7 +163,7 @@ export class PublicChoice extends XtalElement{
                 attribs:{
                     id: this._masterListId,
                     read: true,
-                    'store-id': 'yv8uy'
+                    'store-id': this._masterListId
                 }
                 
             } as DecorateArgs);
