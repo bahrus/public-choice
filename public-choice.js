@@ -44,19 +44,17 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d on="value-changed" to="purr-sist-idb[write]" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
     <!-- Store whether person already voted in local storage -->
     <purr-sist-idb db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
-    
-    <!-- <purr-sist-myjson data-role="persist" read></purr-sist-myjson>
-    <p-d on="value-changed" prop="value"></p-d> -->
+
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
     <purr-sist-myjson data-role="persist" write></purr-sist-myjson>
+
+    <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    
     <xtal-frappe-chart data-allow-view-results="-1"></xtal-frappe-chart>
 </main>
 `);
 const already_voted = 'already-voted';
 const guid = 'guid';
-//const tbd = `${PurrSistIDB.is}, ${PurrSistMyJson.is}`;
 export class PublicChoice extends XtalElement {
     constructor() {
         super(...arguments);
