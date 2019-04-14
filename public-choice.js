@@ -15,8 +15,11 @@ export const masterListKey = Symbol('masterListKey');
 const anySelf = self;
 const mainTemplate = createTemplate(/* html */ `
 <style>
-    [data-show="-1"]{
+    [data-allow-voting="-1"]{
         display:none;
+    }
+    xtal-frappe-chart[data-allow-view-results="-1"]{
+        visibility: hidden;
     }
 </style>
 <main>
@@ -24,9 +27,10 @@ const mainTemplate = createTemplate(/* html */ `
         <slot name="question"></slot>
     </section>
     <purr-sist-idb db-name="pc_vote" store-name="user_status" read></purr-sist-idb>
-    <p-d on="value-changed" prop="lhs"></p-d>
-    <if-diff if not_equals rhs="voted" tag="show"></if-diff>
-    <xtal-radio-group-md name="pronoun" data-flag="voted" data-show="-1">
+    <p-d on="value-changed" to="if-diff" prop="lhs"></p-d>
+    <if-diff if not_equals rhs="voted" tag="allowVoting" m="1"></if-diff>
+    <if-diff if equals rhs="voted" tag="allowViewResults" m="1"></if-diff>
+    <xtal-radio-group-md name="pronoun" data-flag="voted" data-allow-voting="-1">
         <slot name="options"></slot>
     </xtal-radio-group-md>
     <p-d on="value-changed" to="purr-sist-myjson[write]" prop="pc_vote" m="1"></p-d>
@@ -36,7 +40,8 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d on="value-changed" prop="value"></p-d>
     <purr-sist-myjson data-role="persist" write></purr-sist-myjson>
     <p-d on="value-changed" prop="rawData"></p-d>
-    <xtal-frappe-chart></xtal-frappe-chart>
+    
+    <xtal-frappe-chart data-allow-view-results="-1"></xtal-frappe-chart>
 </main>
 `);
 const already_voted = 'already-voted';
