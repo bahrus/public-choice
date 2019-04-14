@@ -10,18 +10,27 @@ import { XtalFrappeChart } from 'xtal-frappe-chart/xtal-frappe-chart.js';
 import { appendTag } from 'trans-render/appendTag.js';
 import { up } from 'trans-render/hydrate.js';
 import { update } from 'trans-render/update.js';
+import 'if-diff/if-diff.js';
 export const masterListKey = Symbol('masterListKey');
 const anySelf = self;
 const mainTemplate = createTemplate(/* html */ `
+<style>
+    [data-show="-1"]{
+        display:none;
+    }
+</style>
 <main>
     <section role="question">
         <slot name="question"></slot>
     </section>
-    <xtal-radio-group-md name="pronoun">
+    <purr-sist-idb db-name="pc_vote" store-name="user_status" read></purr-sist-idb>
+    <p-d on="value-changed" prop="lhs"></p-d>
+    <if-diff if not_equals rhs="voted" tag="show"></if-diff>
+    <xtal-radio-group-md name="pronoun" data-flag="voted" data-show="-1">
         <slot name="options"></slot>
     </xtal-radio-group-md>
     <p-d on="value-changed" to="purr-sist-myjson[write]" prop="pc_vote" m="1"></p-d>
-    <p-d on="value-changed" to="purr-sist-idb[write]" prop="newVal" m="1" skip-init></p-d>
+    <p-d on="value-changed" to="purr-sist-idb[write]" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
     <purr-sist-idb db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
     <purr-sist-myjson data-role="persist" read></purr-sist-myjson>
     <p-d on="value-changed" prop="value"></p-d>
