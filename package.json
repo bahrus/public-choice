@@ -9,7 +9,7 @@
   "dependencies": {
     "xtal-element": "0.0.51",
     "xtal-material": "0.0.58",
-    "xtal-frappe-chart": "0.0.26",
+    "xtal-frappe-chart": "0.0.27",
     "if-diff": "0.0.22",
     "purr-sist": "0.0.49",
     "p-d.p-u": "0.0.113",

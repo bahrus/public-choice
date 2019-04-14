@@ -25,6 +25,9 @@ const mainTemplate = createTemplate(/* html */`
     xtal-frappe-chart[data-allow-view-results="-1"]{
         visibility: hidden;
     }
+    xtal-frappe-chart{
+        pointer-events: none;
+    }
 </style>
 <main>
     <section role="question">
