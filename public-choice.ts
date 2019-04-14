@@ -4,7 +4,7 @@ import 'xtal-material/xtal-radio-group-md.js';
 import {define} from 'trans-render/define.js';
 import {PurrSistAttribs} from 'purr-sist/purr-sist.js';
 import {PurrSistMyJson} from 'purr-sist/purr-sist-myjson.js';
-import {PurrSistIDB, PurrSistIDBAttribs} from 'purr-sist/purr-sist-idb.js';
+import {PurrSistIDB, PurrSistIDBAttribs, idb_item_set} from 'purr-sist/purr-sist-idb.js';
 import {decorate} from 'trans-render/decorate.js';
 import { PurrSist } from 'purr-sist/purr-sist.js';
 import 'p-d.p-u/p-d.js';
