@@ -2,7 +2,9 @@ import {XtalElement} from 'xtal-element/xtal-element.js';
 import {createTemplate, newRenderContext} from 'xtal-element/utils.js';
 import 'xtal-material/xtal-radio-group-md.js';
 import {define} from 'trans-render/define.js';
+import {PurrSistAttribs} from 'purr-sist/purr-sist.js';
 import {PurrSistMyJson} from 'purr-sist/purr-sist-myjson.js';
+import {PurrSistIDB, PurrSistIDBAttribs} from 'purr-sist/purr-sist-idb.js';
 import {decorate} from 'trans-render/decorate.js';
 import { PurrSist } from 'purr-sist/purr-sist.js';
 import 'p-d.p-u/p-d.js';
@@ -23,6 +25,7 @@ const mainTemplate = createTemplate(/* html */`
         <slot name="options"></slot>
     </xtal-radio-group-md>
     <p-d on="value-changed" to="purr-sist-myjson[write]" prop="pc_vote" m="1"></p-d>
+    <purr-sist-idb ></purr-sist-idb>
     <purr-sist-myjson data-role="persist" read></purr-sist-myjson>
     <p-d on="value-changed" prop="value"></p-d>
     <purr-sist-myjson data-role="persist" write></purr-sist-myjson>
@@ -33,6 +36,7 @@ const mainTemplate = createTemplate(/* html */`
 const already_voted = 'already-voted';
 
 const guid = 'guid';
+//const tbd = `${PurrSistIDB.is}, ${PurrSistMyJson.is}`;
 export class PublicChoice extends XtalElement{
     static get is(){return 'public-choice';}
     get mainTemplate(){
@@ -120,9 +124,14 @@ export class PublicChoice extends XtalElement{
             //section: 'What is your favorite pronoun?',
             [PurrSistMyJson.is]: ({target}) => decorate(target as HTMLElement, {
                 attribs:{
-                    [guid]: this._guid,
-                },
+                    guid: this._guid,
+                } as PurrSistAttribs,
             }),
+            [PurrSistIDB.is]: ({target}) => decorate(target as HTMLElement, {
+                attribs:{
+
+                } as PurrSistIDBAttribs
+            })
         }
     })
     get updateContext(){
