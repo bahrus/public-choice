@@ -25,7 +25,8 @@ const mainTemplate = createTemplate(/* html */`
         <slot name="options"></slot>
     </xtal-radio-group-md>
     <p-d on="value-changed" to="purr-sist-myjson[write]" prop="pc_vote" m="1"></p-d>
-    <purr-sist-idb ></purr-sist-idb>
+    <p-d on="value-changed" to="purr-sist-idb[write]" prop="newVal" m="1" skip-init></p-d>
+    <purr-sist-idb db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
     <purr-sist-myjson data-role="persist" read></purr-sist-myjson>
     <p-d on="value-changed" prop="value"></p-d>
     <purr-sist-myjson data-role="persist" write></purr-sist-myjson>
@@ -129,7 +130,7 @@ export class PublicChoice extends XtalElement{
             }),
             [PurrSistIDB.is]: ({target}) => decorate(target as HTMLElement, {
                 attribs:{
-
+                    "store-id": this._guid
                 } as PurrSistIDBAttribs
             })
         }
