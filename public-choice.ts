@@ -33,18 +33,25 @@ const mainTemplate = createTemplate(/* html */`
     <section role="question">
         <slot name="question"></slot>
     </section>
+    <!-- Read from local storage whether user has voted already. -->
     <purr-sist-idb db-name="pc_vote" store-name="user_status" read></purr-sist-idb>
+    <!-- If already voted, hide options and display the results and vice versa -->
     <p-d on="value-changed" to="if-diff" prop="lhs"></p-d>
     <if-diff if not_equals rhs="voted" tag="allowVoting" m="1"></if-diff>
     <if-diff if equals rhs="voted" tag="allowViewResults" m="1"></if-diff>
+    <!-- Options to vote on, passed in via light children.  -->
     <xtal-radio-group-md name="pronoun" data-flag="voted" data-allow-voting="-1">
         <slot name="options"></slot>
     </xtal-radio-group-md>
+    <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
     <p-d on="value-changed" to="purr-sist-myjson[write]" prop="pc_vote" m="1"></p-d>
     <p-d on="value-changed" to="purr-sist-idb[write]" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
+    <!-- Store whether person already voted in local storage -->
     <purr-sist-idb db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
-    <purr-sist-myjson data-role="persist" read></purr-sist-myjson>
-    <p-d on="value-changed" prop="value"></p-d>
+    
+    <!-- <purr-sist-myjson data-role="persist" read></purr-sist-myjson>
+    <p-d on="value-changed" prop="value"></p-d> -->
+    <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
     <purr-sist-myjson data-role="persist" write></purr-sist-myjson>
     <p-d on="value-changed" prop="rawData"></p-d>
     
@@ -191,9 +198,8 @@ export class PublicChoice extends XtalElement{
                     id: this._masterListId,
                     read: true,
                     'store-id': this._masterListId
-                }
-                
-            } as DecorateArgs);
+                } as PurrSistAttribs,
+            });
         }
         super.connectedCallback();
 
