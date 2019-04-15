@@ -46,13 +46,13 @@ const mainTemplate = createTemplate(/* html */`
     </xtal-radio-group-md>
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
     <!-- pc_vote is a property slapped on to purr-sist-myjson via decorate inside init render context -->
-    <p-d on="value-changed" to="purr-sist-myjson[write]" prop="pc_vote" m="1"></p-d>
-    <p-d on="value-changed" to="purr-sist-idb[write]" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
+    <p-d on="value-changed" to="[data-role='mergeVote']" prop="pc_vote" m="1"></p-d>
+    <p-d on="value-changed" to="[data-role='saveIfUserVotedAlready']" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
     <!-- Store whether person already voted.  Put in local storage -->
-    <purr-sist-idb db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
+    <purr-sist-idb data-role="saveIfUserVotedAlready" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
 
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-role="persist" write></purr-sist-myjson>
+    <purr-sist-myjson data-role="mergeVote" write></purr-sist-myjson>
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
