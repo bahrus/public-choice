@@ -6,7 +6,6 @@ import { PurrSistMyJson } from 'purr-sist/purr-sist-myjson.js';
 import 'purr-sist/purr-sist-idb.js';
 import { decorate } from 'trans-render/decorate.js';
 import 'p-d.p-u/p-d.js';
-//import {refract} from 'xtal-element/refract.js';
 import 'xtal-frappe-chart/xtal-frappe-chart.js';
 import { appendTag } from 'trans-render/appendTag.js';
 import { up } from 'trans-render/hydrate.js';
@@ -14,7 +13,6 @@ import { update } from 'trans-render/update.js';
 import 'if-diff/if-diff.js';
 export const masterListKey = Symbol('masterListKey');
 const anySelf = self;
-//const temp = [PurrSistIDB.is];
 const mainTemplate = createTemplate(/* html */ `
 <style>
     [data-allow-voting="-1"]{
@@ -53,11 +51,11 @@ const mainTemplate = createTemplate(/* html */ `
     <!-- Initialize writer to current value TODO: synchronize with other votes --> 
     <p-d on="value-changed" prop="value"></p-d>
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-decorator="_mergeVoteDA" data-role="mergeVote" write></purr-sist-myjson>
+    <purr-sist-myjson data-init-decorator="_mergeVoteDA" data-role="mergeVote" write></purr-sist-myjson>
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    <xtal-frappe-chart data-decorator="_frappeDA"  data-allow-view-results="-1"></xtal-frappe-chart>
+    <xtal-frappe-chart data-init-decorator="_frappeDA"  data-allow-view-results="-1"></xtal-frappe-chart>
 </main>
 `);
 const guid = 'guid';
@@ -128,7 +126,7 @@ export class PublicChoice extends XtalElement {
         };
         this._initContext = newRenderContext({
             main: {
-                '[data-decorator]': ({ target }) => dynDecorator(target, this),
+                '[data-init-decorator]': ({ target }) => dynDecorator(target, this),
             }
         });
         this._updateContext = newRenderContext({
