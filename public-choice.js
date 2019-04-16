@@ -3,18 +3,18 @@ import { createTemplate, newRenderContext } from 'xtal-element/utils.js';
 import 'xtal-material/xtal-radio-group-md.js';
 import { define } from 'trans-render/define.js';
 import { PurrSistMyJson } from 'purr-sist/purr-sist-myjson.js';
-import { PurrSistIDB } from 'purr-sist/purr-sist-idb.js';
+import 'purr-sist/purr-sist-idb.js';
 import { decorate } from 'trans-render/decorate.js';
 import 'p-d.p-u/p-d.js';
 //import {refract} from 'xtal-element/refract.js';
-import { XtalFrappeChart } from 'xtal-frappe-chart/xtal-frappe-chart.js';
+import 'xtal-frappe-chart/xtal-frappe-chart.js';
 import { appendTag } from 'trans-render/appendTag.js';
 import { up } from 'trans-render/hydrate.js';
 import { update } from 'trans-render/update.js';
 import 'if-diff/if-diff.js';
 export const masterListKey = Symbol('masterListKey');
 const anySelf = self;
-const temp = [PurrSistIDB.is];
+//const temp = [PurrSistIDB.is];
 const mainTemplate = createTemplate(/* html */ `
 <style>
     [data-allow-voting="-1"]{
@@ -57,7 +57,7 @@ const mainTemplate = createTemplate(/* html */ `
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    <xtal-frappe-chart  data-allow-view-results="-1"></xtal-frappe-chart>
+    <xtal-frappe-chart data-decorator="_frappeDA"  data-allow-view-results="-1"></xtal-frappe-chart>
 </main>
 `);
 const guid = 'guid';
@@ -87,48 +87,48 @@ export class PublicChoice extends XtalElement {
                 }
             }
         };
+        this._frappeDA = {
+            propDefs: {
+                rawData: null,
+            },
+            methods: {
+                onPropsChange: function (propName, data) {
+                    switch (propName) {
+                        case 'rawData':
+                            const labels = [];
+                            for (const key in data) {
+                                if (key.startsWith('_'))
+                                    continue;
+                                labels.push(key);
+                            }
+                            if (labels.length === 0)
+                                return;
+                            const fd = {
+                                title: 'Votes',
+                                data: {
+                                    labels: labels,
+                                    datasets: [
+                                        {
+                                            name: "Votes",
+                                            color: "light-blue",
+                                            values: labels.map(key => isNaN(data[key]) ? 0 : data[key])
+                                        }
+                                    ]
+                                },
+                                "type": "bar",
+                                "height": 250,
+                                "isNavigable": true
+                            };
+                            //console.log(fd);
+                            this.data = fd;
+                            break;
+                    }
+                }
+            }
+        };
         this._initContext = newRenderContext({
             main: {
                 '[data-decorator]': ({ target }) => dynDecorator(target, this),
-                [XtalFrappeChart.is]: ({ target }) => decorate(target, {
-                    propDefs: {
-                        rawData: null,
-                    },
-                    methods: {
-                        onPropsChange: function (propName, data) {
-                            switch (propName) {
-                                case 'rawData':
-                                    const labels = [];
-                                    for (const key in data) {
-                                        if (key.startsWith('_'))
-                                            continue;
-                                        labels.push(key);
-                                    }
-                                    if (labels.length === 0)
-                                        return;
-                                    const fd = {
-                                        title: 'Votes',
-                                        data: {
-                                            labels: labels,
-                                            datasets: [
-                                                {
-                                                    name: "Votes",
-                                                    color: "light-blue",
-                                                    values: labels.map(key => isNaN(data[key]) ? 0 : data[key])
-                                                }
-                                            ]
-                                        },
-                                        "type": "bar",
-                                        "height": 250,
-                                        "isNavigable": true
-                                    };
-                                    //console.log(fd);
-                                    this.data = fd;
-                                    break;
-                            }
-                        }
-                    }
-                })
             }
         });
         this._updateContext = newRenderContext({
