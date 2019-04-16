@@ -50,42 +50,43 @@ const mainTemplate = createTemplate(/* html */ `
     <purr-sist-idb data-role="saveIfUserVotedAlready" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
     <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
     <purr-sist-myjson data-role="getVote" read></purr-sist-myjson>
-    <!-- Initialize writer to current value TODO: synchronize with other votess --> 
+    <!-- Initialize writer to current value TODO: synchronize with other votes --> 
     <p-d on="value-changed" prop="value"></p-d>
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-role="mergeVote" write></purr-sist-myjson>
+    <purr-sist-myjson data-decorator="_mergeVoteDA" data-role="mergeVote" write></purr-sist-myjson>
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    <xtal-frappe-chart data-allow-view-results="-1"></xtal-frappe-chart>
+    <xtal-frappe-chart  data-allow-view-results="-1"></xtal-frappe-chart>
 </main>
 `);
 const guid = 'guid';
 export class PublicChoice extends XtalElement {
     constructor() {
         super(...arguments);
+        this._mergeVoteDA = {
+            propDefs: {
+                pc_vote: null
+            },
+            methods: {
+                onPropsChange: function (propName, val) {
+                    switch (propName) {
+                        case 'pc_vote':
+                            const _this = this;
+                            const newVal = _this.newVal || _this.value;
+                            if (!newVal[val]) {
+                                newVal[val] = 0;
+                            }
+                            newVal[val]++;
+                            _this.newVal = { ...newVal };
+                            break;
+                    }
+                }
+            }
+        };
         this._initContext = newRenderContext({
             main: {
-                '[data-role="mergeVote"]': ({ target }) => decorate(target, {
-                    propDefs: {
-                        pc_vote: null
-                    },
-                    methods: {
-                        onPropsChange: function (propName, val) {
-                            switch (propName) {
-                                case 'pc_vote':
-                                    const _this = this;
-                                    const newVal = _this.newVal || _this.value;
-                                    if (!newVal[val]) {
-                                        newVal[val] = 0;
-                                    }
-                                    newVal[val]++;
-                                    _this.newVal = { ...newVal };
-                                    break;
-                            }
-                        }
-                    }
-                }),
+                '[data-decorator]': ({ target }) => decorate(target, this[target.dataset.decorator]),
                 [XtalFrappeChart.is]: ({ target }) => decorate(target, {
                     propDefs: {
                         rawData: null,

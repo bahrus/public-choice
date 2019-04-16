@@ -56,11 +56,11 @@ const mainTemplate = createTemplate(/* html */`
     <!-- Initialize writer to current value TODO: synchronize with other votes --> 
     <p-d on="value-changed" prop="value"></p-d>
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-role="mergeVote" write></purr-sist-myjson>
+    <purr-sist-myjson data-decorator="_mergeVoteDA" data-role="mergeVote" write></purr-sist-myjson>
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    <xtal-frappe-chart data-allow-view-results="-1"></xtal-frappe-chart>
+    <xtal-frappe-chart  data-allow-view-results="-1"></xtal-frappe-chart>
 </main>
 `);
 
@@ -98,7 +98,7 @@ export class PublicChoice extends XtalElement {
 
     _initContext = newRenderContext({
         main: {
-            '[data-role="mergeVote"]': ({ target }) => decorate(target as HTMLElement, this._mergeVoteDA),
+            '[data-decorator]': ({ target }) => decorate(target as HTMLElement, (<any>this)[(target as HTMLElement).dataset.decorator!]),
             [XtalFrappeChart.is]: ({ target }) => decorate(target as HTMLElement, {
                 propDefs: {
                     rawData: null,
