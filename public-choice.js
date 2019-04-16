@@ -61,6 +61,9 @@ const mainTemplate = createTemplate(/* html */ `
 </main>
 `);
 const guid = 'guid';
+function dynDecorator(target, host) {
+    decorate(target, host[target.dataset.decorator]);
+}
 export class PublicChoice extends XtalElement {
     constructor() {
         super(...arguments);
@@ -86,7 +89,7 @@ export class PublicChoice extends XtalElement {
         };
         this._initContext = newRenderContext({
             main: {
-                '[data-decorator]': ({ target }) => decorate(target, this[target.dataset.decorator]),
+                '[data-decorator]': ({ target }) => dynDecorator(target, this),
                 [XtalFrappeChart.is]: ({ target }) => decorate(target, {
                     propDefs: {
                         rawData: null,
