@@ -6,6 +6,7 @@ import { PurrSistMyJson } from 'purr-sist/purr-sist-myjson.js';
 import { PurrSistIDB } from 'purr-sist/purr-sist-idb.js';
 import { decorate } from 'trans-render/decorate.js';
 import 'p-d.p-u/p-d.js';
+//import {refract} from 'xtal-element/refract.js';
 import { XtalFrappeChart } from 'xtal-frappe-chart/xtal-frappe-chart.js';
 import { appendTag } from 'trans-render/appendTag.js';
 import { up } from 'trans-render/hydrate.js';
@@ -13,6 +14,7 @@ import { update } from 'trans-render/update.js';
 import 'if-diff/if-diff.js';
 export const masterListKey = Symbol('masterListKey');
 const anySelf = self;
+const temp = [PurrSistIDB.is];
 const mainTemplate = createTemplate(/* html */ `
 <style>
     [data-allow-voting="-1"]{
@@ -31,7 +33,7 @@ const mainTemplate = createTemplate(/* html */ `
         <slot name="question"></slot>
     </section>
     <!-- Read from local storage whether user has voted already. store-id set from guid property in update context.-->
-    <purr-sist-idb db-name="pc_vote" store-name="user_status" read></purr-sist-idb>
+    <purr-sist-idb data-role="getUserVoteStatus" db-name="pc_vote" store-name="user_status" read></purr-sist-idb>
     <!-- If already voted, hide options and display the results and vice versa -->
     <p-d on="value-changed" to="if-diff" prop="lhs"></p-d>
     <if-diff if lhs not_equals rhs="voted" tag="allowVoting" m="1"></if-diff>
@@ -47,6 +49,8 @@ const mainTemplate = createTemplate(/* html */ `
     <!-- Store whether person already voted.  Put in local storage -->
     <purr-sist-idb data-role="saveIfUserVotedAlready" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
 
+    <purr-sist-myjson data-role="getVote" read></purr-sist-myjson>
+    <p-d on="value-changed" prop="value"></p-d>
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
     <purr-sist-myjson data-role="mergeVote" write></purr-sist-myjson>
 
@@ -55,20 +59,13 @@ const mainTemplate = createTemplate(/* html */ `
     <xtal-frappe-chart data-allow-view-results="-1"></xtal-frappe-chart>
 </main>
 `);
-const already_voted = 'already-voted';
 const guid = 'guid';
 export class PublicChoice extends XtalElement {
     constructor() {
         super(...arguments);
         this._initContext = newRenderContext({
             main: {
-                //section: 'What is your favorite pronoun?',
-                [PurrSistMyJson.is]: ({ target }) => decorate(target, {
-                    propVals: {
-                        masterListId: '/' + this._masterListId,
-                    },
-                }),
-                ['[data-role="persist"][write]']: ({ target }) => decorate(target, {
+                '[data-role="mergeVote"]': ({ target }) => decorate(target, {
                     propDefs: {
                         pc_vote: null
                     },
@@ -83,7 +80,6 @@ export class PublicChoice extends XtalElement {
                                     }
                                     newVal[val]++;
                                     _this.newVal = { ...newVal };
-                                    //console.log(newVal);
                                     break;
                             }
                         }
@@ -133,12 +129,15 @@ export class PublicChoice extends XtalElement {
         this._updateContext = newRenderContext({
             main: {
                 //section: 'What is your favorite pronoun?',
-                [PurrSistMyJson.is]: ({ target }) => decorate(target, {
+                '[data-role="mergeVote"], [data-role="getVote"]': ({ target }) => decorate(target, {
+                    propVals: {
+                        masterListId: '/' + this._masterListId,
+                    },
                     attribs: {
                         guid: this._guid,
                     },
                 }),
-                [PurrSistIDB.is]: ({ target }) => decorate(target, {
+                '[data-role="saveIfUserVotedAlready"], [data-role="getUserVoteStatus"]': ({ target }) => decorate(target, {
                     attribs: {
                         "store-id": this._guid
                     }
@@ -179,6 +178,7 @@ export class PublicChoice extends XtalElement {
         this[up]([guid]);
         this._masterListId = anySelf[masterListKey] ? anySelf[masterListKey] : 'yv8uy';
         if (!self[this._masterListId]) {
+            //Create Master List component in document.head
             appendTag(document.head, PurrSistMyJson.is, {
                 attribs: {
                     id: this._masterListId,
