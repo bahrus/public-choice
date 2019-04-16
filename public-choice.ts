@@ -51,8 +51,9 @@ const mainTemplate = createTemplate(/* html */`
     <p-d on="value-changed" to="[data-role='saveIfUserVotedAlready']" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
     <!-- Store whether person already voted.  Put in local storage -->
     <purr-sist-idb data-role="saveIfUserVotedAlready" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
-
+    <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
     <purr-sist-myjson data-role="getVote" read></purr-sist-myjson>
+    <!-- Initialize writer to current value TODO: synchronize with other votess --> 
     <p-d on="value-changed" prop="value"></p-d>
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
     <purr-sist-myjson data-role="mergeVote" write></purr-sist-myjson>
