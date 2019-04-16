@@ -53,7 +53,7 @@ const mainTemplate = createTemplate(/* html */`
     <purr-sist-idb data-role="saveIfUserVotedAlready" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
     <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
     <purr-sist-myjson data-role="getVote" read></purr-sist-myjson>
-    <!-- Initialize writer to current value TODO: synchronize with other votess --> 
+    <!-- Initialize writer to current value TODO: synchronize with other votes --> 
     <p-d on="value-changed" prop="value"></p-d>
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
     <purr-sist-myjson data-role="mergeVote" write></purr-sist-myjson>
@@ -64,6 +64,8 @@ const mainTemplate = createTemplate(/* html */`
 </main>
 `);
 
+
+
 const guid = 'guid';
 
 export class PublicChoice extends XtalElement {
@@ -73,28 +75,30 @@ export class PublicChoice extends XtalElement {
     }
     _masterListId!: string;
 
+    _mergeVoteDA: DecorateArgs = {
+        propDefs: {
+            pc_vote: null
+        },
+        methods: {
+            onPropsChange: function (propName: string, val: string) {
+                switch (propName) {
+                    case 'pc_vote':
+                        const _this = (<any>this) as PurrSist
+                        const newVal = _this.newVal || _this.value;
+                        if (!newVal[val]) {
+                            newVal[val] = 0;
+                        }
+                        newVal[val]++;
+                        _this.newVal = { ...newVal };
+                        break;
+                }
+            }
+        }
+    };
+
     _initContext = newRenderContext({
         main: {
-            '[data-role="mergeVote"]': ({ target }) => decorate(target as HTMLElement, {
-                propDefs: {
-                    pc_vote: null
-                },
-                methods: {
-                    onPropsChange: function (propName: string, val: string) {
-                        switch (propName) {
-                            case 'pc_vote':
-                                const _this = (<any>this) as PurrSist
-                                const newVal = _this.newVal || _this.value;
-                                if (!newVal[val]) {
-                                    newVal[val] = 0;
-                                }
-                                newVal[val]++;
-                                _this.newVal = { ...newVal };
-                                break;
-                        }
-                    }
-                }
-            }),
+            '[data-role="mergeVote"]': ({ target }) => decorate(target as HTMLElement, this._mergeVoteDA),
             [XtalFrappeChart.is]: ({ target }) => decorate(target as HTMLElement, {
                 propDefs: {
                     rawData: null,
