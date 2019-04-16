@@ -59,8 +59,11 @@ const mainTemplate = createTemplate(/* html */ `
 </main>
 `);
 const guid = 'guid';
-function dynDecorator(target, host) {
-    decorate(target, host[target.dataset.decorator]);
+function dynInitDecorator(target, host) {
+    decorate(target, host[target.dataset.initDecorator]);
+}
+function dynUpdateDecorator(target, host) {
+    decorate(target, host[target.dataset.updateDecorator]);
 }
 export class PublicChoice extends XtalElement {
     constructor() {
@@ -126,7 +129,7 @@ export class PublicChoice extends XtalElement {
         };
         this._initContext = newRenderContext({
             main: {
-                '[data-init-decorator]': ({ target }) => dynDecorator(target, this),
+                '[data-init-decorator]': ({ target }) => dynInitDecorator(target, this),
             }
         });
         this._updateContext = newRenderContext({

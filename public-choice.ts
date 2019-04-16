@@ -66,8 +66,12 @@ const mainTemplate = createTemplate(/* html */`
 
 
 const guid = 'guid';
-function dynDecorator(target: Element, host: HTMLElement){
-    decorate(target as HTMLElement, (<any>host)[(target as HTMLElement).dataset.decorator!];
+function dynInitDecorator(target: Element, host: HTMLElement){
+    decorate(target as HTMLElement, (<any>host)[(target as HTMLElement).dataset.initDecorator!]);
+}
+
+function dynUpdateDecorator(target: Element, host: HTMLElement){
+    decorate(target as HTMLElement, (<any>host)[(target as HTMLElement).dataset.updateDecorator!]);
 }
 
 export class PublicChoice extends XtalElement {
@@ -138,9 +142,10 @@ export class PublicChoice extends XtalElement {
         }
     }
 
+
     _initContext = newRenderContext({
         main: {
-            '[data-init-decorator]': ({ target }) => dynDecorator(target, this),
+            '[data-init-decorator]': ({ target }) => dynInitDecorator(target, this),
         }
 
     });
@@ -163,7 +168,7 @@ export class PublicChoice extends XtalElement {
                 } as PurrSistIDBAttribs
             })
         }
-    })
+    });
     get updateContext() {
         this._updateContext.update = update;
         return this._updateContext;
