@@ -34,8 +34,8 @@ const mainTemplate = createTemplate(/* html */`
     <section role="question">
         <slot name="question"></slot>
     </section>
-    <!-- Read from local storage whether user has voted already. store-id set from guid property in update context.-->
-    <purr-sist-idb data-role="getUserVoteStatus" db-name="pc_vote"  data-update-decorator="_linkToGuid"  store-name="user_status" read></purr-sist-idb>
+    <!-- Read from local storage whether user has voted already. store-id set from guid property in _linkToGuid().-->
+    <purr-sist-idb data-role="getUserVoteStatus" db-name="pc_vote"  data-update-decorators="_linkToGuid"  store-name="user_status" read></purr-sist-idb>
     <!-- If already voted, hide options and display the results and vice versa -->
     <p-d on="value-changed" to="if-diff" prop="lhs"></p-d>
     <if-diff if lhs not_equals rhs="voted" tag="allowVoting" m="1"></if-diff>
@@ -45,34 +45,29 @@ const mainTemplate = createTemplate(/* html */`
         <slot name="options"></slot>
     </xtal-radio-group-md>
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
-    <!-- pc_vote is a property slapped on to purr-sist-myjson via decorate inside init render context -->
+    <!-- pc_vote is a property slapped on to purr-sist-myjson via _mergeVoteDA decorator -->
     <p-d on="value-changed" to="[data-role='mergeVote']" prop="pc_vote" m="1"></p-d>
     <p-d on="value-changed" to="[data-role='saveIfUserVotedAlready']" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
     <!-- Store whether person already voted.  Put in local storage -->
-    <purr-sist-idb data-role="saveIfUserVotedAlready" data-update-decorator="_linkToGuid" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
+    <purr-sist-idb data-role="saveIfUserVotedAlready" data-update-decorators="_linkToGuid" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
     <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-role="getVote" read  data-update-decorator="_linkWithMaster"></purr-sist-myjson>
+    <purr-sist-myjson data-role="getVote" read  data-update-decorators="_linkWithMaster"></purr-sist-myjson>
     <!-- Initialize writer to current value TODO: synchronize with other votes --> 
     <p-d on="value-changed" prop="value"></p-d>
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-init-decorator="_mergeVoteDA" data-update-decorator="_linkWithMaster" data-role="mergeVote" write></purr-sist-myjson>
+    <purr-sist-myjson data-init-decorators="_mergeVoteDA" data-update-decorators="_linkWithMaster" data-role="mergeVote" write></purr-sist-myjson>
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    <xtal-frappe-chart data-init-decorator="_frappeDA"  data-allow-view-results="-1"></xtal-frappe-chart>
+    <xtal-frappe-chart data-init-decorators="_frappeDA"  data-allow-view-results="-1"></xtal-frappe-chart>
 </main>
 `);
 
 
 
 const guid = 'guid';
-function dynInitDecorator(target: Element, host: HTMLElement){
-    decorate(target as HTMLElement, (<any>host)[(target as HTMLElement).dataset.initDecorator!]);
-}
 
-function dynUpdateDecorator(target: Element, host: HTMLElement){
-    (<any>host)[(target as HTMLElement).dataset.updateDecorator!](target);
-}
+
 
 export class PublicChoice extends XtalElement {
     static get is() { return 'public-choice'; }
@@ -80,6 +75,22 @@ export class PublicChoice extends XtalElement {
         return mainTemplate;
     }
     _masterListId!: string;
+
+    initDecorators(target: Element){
+        const decorators = (target as HTMLElement).dataset.initDecorators!;
+        decorators.split(';').forEach(decorator =>{
+            decorate(target as HTMLElement, (<any>this)[decorator]);
+        })
+        
+    }
+
+    updateDecorators(target: Element){
+        const decorators = (target as HTMLElement).dataset.updateDecorators!;
+        decorators.split(';').forEach(decorator =>{
+            (<any>this)[decorator](target);
+        })
+        
+    }
 
     _mergeVoteDA: DecorateArgs = {
         propDefs: {
@@ -164,7 +175,7 @@ export class PublicChoice extends XtalElement {
 
     _initContext = newRenderContext({
         main: {
-            '[data-init-decorator]': ({ target }) => dynInitDecorator(target, this),
+            '[data-init-decorators]': ({ target }) => this.initDecorators(target),
         }
 
     });
@@ -172,20 +183,7 @@ export class PublicChoice extends XtalElement {
 
     _updateContext = newRenderContext({
         main: {
-            '[data-update-decorator]': ({ target }) => dynUpdateDecorator(target, this),
-            // '[data-role="mergeVote"], [data-role="getVote"]': ({ target }) => decorate(target as HTMLElement, {
-            //     propVals: {
-            //         masterListId: '/' + this._masterListId,
-            //     } as PurrSistMyJson,
-            //     attribs: {
-            //         guid: this._guid,
-            //     } as PurrSistAttribs,
-            // }),
-            // '[data-role="saveIfUserVotedAlready"], [data-role="getUserVoteStatus"]': ({ target }) => decorate(target as HTMLElement, {
-            //     attribs: {
-            //         "store-id": this._guid
-            //     } as PurrSistIDBAttribs
-            // })
+            '[data-update-decorators]': ({ target }) => this.updateDecorators(target),
         }
     });
     get updateContext() {
