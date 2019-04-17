@@ -31,7 +31,7 @@ const mainTemplate = createTemplate(/* html */ `
         <slot name="question"></slot>
     </section>
     <!-- Read from local storage whether user has voted already. store-id set from guid property in update context.-->
-    <purr-sist-idb data-role="getUserVoteStatus" db-name="pc_vote" store-name="user_status" read></purr-sist-idb>
+    <purr-sist-idb data-role="getUserVoteStatus" db-name="pc_vote"  data-update-decorator="_linkToGuid"  store-name="user_status" read></purr-sist-idb>
     <!-- If already voted, hide options and display the results and vice versa -->
     <p-d on="value-changed" to="if-diff" prop="lhs"></p-d>
     <if-diff if lhs not_equals rhs="voted" tag="allowVoting" m="1"></if-diff>
@@ -45,13 +45,13 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d on="value-changed" to="[data-role='mergeVote']" prop="pc_vote" m="1"></p-d>
     <p-d on="value-changed" to="[data-role='saveIfUserVotedAlready']" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
     <!-- Store whether person already voted.  Put in local storage -->
-    <purr-sist-idb data-role="saveIfUserVotedAlready" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
+    <purr-sist-idb data-role="saveIfUserVotedAlready" data-update-decorator="_linkToGuid" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
     <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-role="getVote" read></purr-sist-myjson>
+    <purr-sist-myjson data-role="getVote" read  data-update-decorator="_linkWithMaster"></purr-sist-myjson>
     <!-- Initialize writer to current value TODO: synchronize with other votes --> 
     <p-d on="value-changed" prop="value"></p-d>
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-init-decorator="_mergeVoteDA" data-role="mergeVote" write></purr-sist-myjson>
+    <purr-sist-myjson data-init-decorator="_mergeVoteDA" data-update-decorator="_linkWithMaster" data-role="mergeVote" write></purr-sist-myjson>
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
@@ -63,7 +63,7 @@ function dynInitDecorator(target, host) {
     decorate(target, host[target.dataset.initDecorator]);
 }
 function dynUpdateDecorator(target, host) {
-    decorate(target, host[target.dataset.updateDecorator]);
+    host[target.dataset.updateDecorator](target);
 }
 export class PublicChoice extends XtalElement {
     constructor() {
@@ -134,26 +134,30 @@ export class PublicChoice extends XtalElement {
         });
         this._updateContext = newRenderContext({
             main: {
-                //section: 'What is your favorite pronoun?',
-                '[data-role="mergeVote"], [data-role="getVote"]': ({ target }) => decorate(target, {
-                    propVals: {
-                        masterListId: '/' + this._masterListId,
-                    },
-                    attribs: {
-                        guid: this._guid,
-                    },
-                }),
-                '[data-role="saveIfUserVotedAlready"], [data-role="getUserVoteStatus"]': ({ target }) => decorate(target, {
-                    attribs: {
-                        "store-id": this._guid
-                    }
-                })
+                '[data-update-decorator]': ({ target }) => dynUpdateDecorator(target, this),
             }
         });
     }
     static get is() { return 'public-choice'; }
     get mainTemplate() {
         return mainTemplate;
+    }
+    _linkWithMaster(target) {
+        decorate(target, {
+            propVals: {
+                masterListId: '/' + this._masterListId,
+            },
+            attribs: {
+                guid: this._guid,
+            },
+        });
+    }
+    _linkToGuid(target) {
+        decorate(target, {
+            attribs: {
+                "store-id": this._guid
+            }
+        });
     }
     get initContext() { return this._initContext; }
     get updateContext() {
