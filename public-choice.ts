@@ -15,6 +15,7 @@ import { DecorateArgs } from '../trans-render/init.d.js';
 import { up } from 'trans-render/hydrate.js';
 import { update } from 'trans-render/update.js';
 import 'if-diff/if-diff.js';
+import { initDecorators, updateDecorators } from 'xtal-element/data-decorators.js';
 export const masterListKey = Symbol('masterListKey');
 const anySelf = (<any>self);
 const mainTemplate = createTemplate(/* html */`
@@ -76,21 +77,6 @@ export class PublicChoice extends XtalElement {
     }
     _masterListId!: string;
 
-    initDecorators(target: Element){
-        const decorators = (target as HTMLElement).dataset.initDecorators!;
-        decorators.split(';').forEach(decorator =>{
-            decorate(target as HTMLElement, (<any>this)[decorator]);
-        })
-        
-    }
-
-    updateDecorators(target: Element){
-        const decorators = (target as HTMLElement).dataset.updateDecorators!;
-        decorators.split(';').forEach(decorator =>{
-            (<any>this)[decorator](target);
-        })
-        
-    }
 
     _mergeVoteDA: DecorateArgs = {
         propDefs: {
@@ -175,7 +161,7 @@ export class PublicChoice extends XtalElement {
 
     _initContext = newRenderContext({
         main: {
-            '[data-init-decorators]': ({ target }) => this.initDecorators(target),
+            '[data-init-decorators]': ({ target }) => this[initDecorators](target),
         }
 
     });
@@ -183,7 +169,7 @@ export class PublicChoice extends XtalElement {
 
     _updateContext = newRenderContext({
         main: {
-            '[data-update-decorators]': ({ target }) => this.updateDecorators(target),
+            '[data-update-decorators]': ({ target }) => this[updateDecorators](target),
         }
     });
     get updateContext() {

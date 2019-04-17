@@ -11,6 +11,7 @@ import { appendTag } from 'trans-render/appendTag.js';
 import { up } from 'trans-render/hydrate.js';
 import { update } from 'trans-render/update.js';
 import 'if-diff/if-diff.js';
+import { initDecorators, updateDecorators } from 'xtal-element/data-decorators.js';
 export const masterListKey = Symbol('masterListKey');
 const anySelf = self;
 const mainTemplate = createTemplate(/* html */ `
@@ -123,30 +124,18 @@ export class PublicChoice extends XtalElement {
         };
         this._initContext = newRenderContext({
             main: {
-                '[data-init-decorators]': ({ target }) => this.initDecorators(target),
+                '[data-init-decorators]': ({ target }) => this[initDecorators](target),
             }
         });
         this._updateContext = newRenderContext({
             main: {
-                '[data-update-decorators]': ({ target }) => this.updateDecorators(target),
+                '[data-update-decorators]': ({ target }) => this[updateDecorators](target),
             }
         });
     }
     static get is() { return 'public-choice'; }
     get mainTemplate() {
         return mainTemplate;
-    }
-    initDecorators(target) {
-        const decorators = target.dataset.initDecorators;
-        decorators.split(';').forEach(decorator => {
-            decorate(target, this[decorator]);
-        });
-    }
-    updateDecorators(target) {
-        const decorators = target.dataset.updateDecorators;
-        decorators.split(';').forEach(decorator => {
-            this[decorator](target);
-        });
     }
     _linkWithMaster(target) {
         decorate(target, {

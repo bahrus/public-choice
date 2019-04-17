@@ -1,19 +1,19 @@
 {
   "name": "public-choice",
   "version": "0.0.4",
-  "description": "TBD",
+  "description": "Voting / Polling Web Component",
   "main": "public-choice.js",
   "module": "public-choice.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "xtal-element": "0.0.52",
-    "xtal-material": "0.0.58",
-    "xtal-frappe-chart": "0.0.27",
-    "if-diff": "0.0.22",
-    "purr-sist": "0.0.50",
-    "p-d.p-u": "0.0.113",
+    "xtal-element": "0.0.54",
+    "xtal-material": "0.0.59",
+    "xtal-frappe-chart": "0.0.28",
+    "if-diff": "0.0.23",
+    "purr-sist": "0.0.51",
+    "p-d.p-u": "0.0.115",
     "trans-render": "0.0.102"
   },
   "repository": {
