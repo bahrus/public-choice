@@ -1,24 +1,28 @@
-import { XtalElement } from 'xtal-element/xtal-element.js';
-import { createTemplate, newRenderContext } from 'xtal-element/utils.js';
-import 'xtal-material/xtal-radio-group-md.js';
-import { define } from 'trans-render/define.js';
-import { PurrSistAttribs } from 'purr-sist/purr-sist.js';
-import { PurrSistMyJson } from 'purr-sist/purr-sist-myjson.js';
-import { PurrSistIDBAttribs, idb_item_set } from 'purr-sist/purr-sist-idb.js';
-import 'purr-sist/purr-sist-idb.js';
-import { decorate } from 'trans-render/decorate.js';
-import { PurrSist } from 'purr-sist/purr-sist.js';
-import 'p-d.p-u/p-d.js';
-import  'xtal-frappe-chart/xtal-frappe-chart.js';
-import { appendTag } from 'trans-render/appendTag.js';
-import { DecorateArgs } from '../trans-render/init.d.js';
-import { up } from 'trans-render/hydrate.js';
-import { update } from 'trans-render/update.js';
-import 'if-diff/if-diff.js';
-import { initDecorators, updateDecorators } from 'xtal-element/data-decorators.js';
-export const masterListKey = Symbol('masterListKey');
-const anySelf = (<any>self);
-const mainTemplate = createTemplate(/* html */`
+import { XtalElement } from "xtal-element/xtal-element.js";
+import { createTemplate, newRenderContext } from "xtal-element/utils.js";
+import "xtal-material/xtal-radio-group-md.js";
+import { define } from "trans-render/define.js";
+import { PurrSistAttribs } from "purr-sist/purr-sist.js";
+import { PurrSistMyJson } from "purr-sist/purr-sist-myjson.js";
+import { PurrSistIDBAttribs, idb_item_set } from "purr-sist/purr-sist-idb.js";
+import "purr-sist/purr-sist-idb.js";
+import { decorate } from "trans-render/decorate.js";
+import { PurrSist } from "purr-sist/purr-sist.js";
+import "p-d.p-u/p-d.js";
+import "xtal-frappe-chart/xtal-frappe-chart.js";
+import { appendTag } from "trans-render/appendTag.js";
+import { DecorateArgs } from "../trans-render/init.d.js";
+import { up } from "trans-render/hydrate.js";
+import { update } from "trans-render/update.js";
+import "if-diff/if-diff.js";
+import "@google-web-components/google-chart/google-chart.js";
+import {
+  initDecorators,
+  updateDecorators
+} from "xtal-element/data-decorators.js";
+export const masterListKey = Symbol("masterListKey");
+const anySelf = <any>self;
+const mainTemplate = createTemplate(/* html */ `
 <style>
     [data-allow-voting="-1"]{
         display:none;
@@ -54,171 +58,148 @@ const mainTemplate = createTemplate(/* html */`
     <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
     <purr-sist-myjson data-role="getVote" read  data-update-decorators="_linkWithMaster"></purr-sist-myjson>
     <!-- Initialize writer to current value TODO: synchronize with other votes --> 
-    <p-d on="value-changed" prop="value"></p-d>
+    <p-d on=value-changed prop=value></p-d>
     <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-init-decorators="_mergeVoteDA" data-update-decorators="_linkWithMaster" data-role="mergeVote" write></purr-sist-myjson>
+    <purr-sist-myjson data-init-decorators=_mergeVoteDA data-update-decorators=_linkWithMaster data-role=mergeVote write></purr-sist-myjson>
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    <xtal-frappe-chart data-init-decorators="_frappeDA"  data-allow-view-results="-1"></xtal-frappe-chart>
+    <!-- <xtal-frappe-chart data-init-decorators="_frappeDA"  data-allow-view-results="-1"></xtal-frappe-chart> -->
+    <google-chart data-init-decorators="_frappeDA"  data-allow-view-results="-1"></google-chart>
 </main>
 `);
 
-
-
-const guid = 'guid';
-
-
+const guid = "guid";
 
 export class PublicChoice extends XtalElement {
-    static get is() { return 'public-choice'; }
-    get mainTemplate() {
-        return mainTemplate;
-    }
-    _masterListId!: string;
+  static get is() {
+    return "public-choice";
+  }
+  get mainTemplate() {
+    return mainTemplate;
+  }
+  _masterListId!: string;
 
-
-    _mergeVoteDA: DecorateArgs = {
-        propDefs: {
-            pc_vote: null
-        },
-        methods: {
-            onPropsChange: function (propName: string, val: string) {
-                switch (propName) {
-                    case 'pc_vote':
-                        const _this = (<any>this) as PurrSist
-                        const newVal = _this.newVal || _this.value;
-                        if (!newVal[val]) {
-                            newVal[val] = 0;
-                        }
-                        newVal[val]++;
-                        _this.newVal = { ...newVal };
-                        break;
-                }
+  _mergeVoteDA: DecorateArgs = {
+    propDefs: {
+      pc_vote: null
+    },
+    methods: {
+      onPropsChange: function(propName: string, val: string) {
+        switch (propName) {
+          case "pc_vote":
+            const _this = (<any>this) as PurrSist;
+            const newVal = _this.newVal || _this.value;
+            if (!newVal[val]) {
+              newVal[val] = 0;
             }
+            newVal[val]++;
+            _this.newVal = { ...newVal };
+            break;
         }
-    };
+      }
+    }
+  };
 
-    _frappeDA: DecorateArgs = {
-        propDefs: {
-            rawData: null,
-        },
-        methods: {
-            onPropsChange: function (propName: string, data: any) {
-
-                switch (propName) {
-                    case 'rawData':
-                        const labels = [];
-                        for (const key in data) {
-                            if (key.startsWith('_')) continue;
-                            labels.push(key);
-                        }
-                        if (labels.length === 0) return;
-                        const fd = {
-                            title: 'Votes',
-                            data: {
-                                labels: labels,
-                                datasets: [
-                                    {
-                                        name: "Votes",
-                                        color: "light-blue",
-                                        values: labels.map(key => isNaN(data[key]) ? 0 : data[key])
-                                    }
-                                ]
-                            },
-                            "type": "bar",
-                            "height": 250,
-                            "isNavigable": true
-                        };
-                        //console.log(fd);
-                        (<any>this).data = fd;
-                        break;
-                }
-
+  _frappeDA: DecorateArgs = {
+    propDefs: {
+      rawData: null
+    },
+    methods: {
+      onPropsChange: function(propName: string, data: any[]) {
+        switch (propName) {
+          case "rawData":
+            const labels = ["Answer", "Votes"];
+            const fd = [labels];
+            for(var key in data){
+              fd.push([key, data[key]]);
             }
+            (<any>this).data = fd;
+            break;
         }
+      }
     }
+  };
 
-    _linkWithMaster(target : Element) {
-        decorate(target as HTMLElement, {
-            propVals: {
-                masterListId: '/' + this._masterListId,
-            } as PurrSistMyJson,
-            attribs: {
-                guid: this._guid,
-            } as PurrSistAttribs,
-        });
-    }
-
-    _linkToGuid(target : Element) {
-        decorate(target as HTMLElement, {
-            attribs: {
-                "store-id": this._guid
-            } as PurrSistIDBAttribs
-        });
-    }
-
-
-    _initContext = newRenderContext({
-        main: {
-            '[data-init-decorators]': ({ target }) => this[initDecorators](target),
-        }
-
+  _linkWithMaster(target: Element) {
+    decorate(target as HTMLElement, {
+      propVals: {
+        masterListId: "/" + this._masterListId
+      } as PurrSistMyJson,
+      attribs: {
+        guid: this._guid
+      } as PurrSistAttribs
     });
-    get initContext() { return this._initContext; }
+  }
 
-    _updateContext = newRenderContext({
-        main: {
-            '[data-update-decorators]': ({ target }) => this[updateDecorators](target),
-        }
+  _linkToGuid(target: Element) {
+    decorate(target as HTMLElement, {
+      attribs: {
+        "store-id": this._guid
+      } as PurrSistIDBAttribs
     });
-    get updateContext() {
-        this._updateContext.update = update;
-        return this._updateContext;
+  }
+
+  _initContext = newRenderContext({
+    main: {
+      "[data-init-decorators]": ({ target }) => this[initDecorators](target)
     }
+  });
+  get initContext() {
+    return this._initContext;
+  }
 
-    _guid!: string;
-    get guid() {
-        return this._guid;
+  _updateContext = newRenderContext({
+    main: {
+      "[data-update-decorators]": ({ target }) => this[updateDecorators](target)
     }
-    set guid(nv) {
-        this.attr(guid, nv);
+  });
+  get updateContext() {
+    this._updateContext.update = update;
+    return this._updateContext;
+  }
+
+  _guid!: string;
+  get guid() {
+    return this._guid;
+  }
+  set guid(nv) {
+    this.attr(guid, nv);
+  }
+
+  attributeChangedCallback(n: string, ov: string, nv: string) {
+    switch (n) {
+      case guid:
+        this._guid = nv;
+        break;
     }
+    super.attributeChangedCallback(n, ov, nv);
+  }
 
-    attributeChangedCallback(n: string, ov: string, nv: string) {
-        switch (n) {
-            case guid:
-                this._guid = nv;
-                break;
-        }
-        super.attributeChangedCallback(n, ov, nv);
+  get ready() {
+    return this._guid !== undefined;
+  }
+
+  static get observedAttributes() {
+    return super.observedAttributes.concat([guid]);
+  }
+
+  connectedCallback() {
+    this[up]([guid]);
+    this._masterListId = anySelf[masterListKey]
+      ? (anySelf[masterListKey] as string)
+      : "yv8uy";
+    if (!(<any>self)[this._masterListId]) {
+      //Create Master List component in document.head
+      appendTag(document.head, PurrSistMyJson.is, {
+        attribs: {
+          id: this._masterListId,
+          read: true,
+          "store-id": this._masterListId
+        } as PurrSistAttribs
+      });
     }
-
-    get ready() {
-        return this._guid !== undefined;
-    }
-
-    static get observedAttributes() {
-        return super.observedAttributes.concat([guid]);
-    }
-
-    connectedCallback() {
-        this[up]([guid]);
-        this._masterListId = anySelf[masterListKey] ? anySelf[masterListKey] as string : 'yv8uy';
-        if (!(<any>self)[this._masterListId]) {
-            //Create Master List component in document.head
-            appendTag(document.head, PurrSistMyJson.is, {
-                attribs: {
-                    id: this._masterListId,
-                    read: true,
-                    'store-id': this._masterListId
-                } as PurrSistAttribs,
-            });
-        }
-        super.connectedCallback();
-
-    }
-
-
+    super.connectedCallback();
+  }
 }
 define(PublicChoice);

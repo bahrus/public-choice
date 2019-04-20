@@ -14,7 +14,8 @@
     "if-diff": "0.0.23",
     "purr-sist": "0.0.51",
     "p-d.p-u": "0.0.115",
-    "trans-render": "0.0.102"
+    "trans-render": "0.0.102",
+    "@google-web-components/google-chart": "3.0.4"
   },
   "repository": {
     "type": "git",
