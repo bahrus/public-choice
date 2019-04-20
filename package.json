@@ -1,6 +1,6 @@
 {
   "name": "public-choice",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Voting / Polling Web Component",
   "main": "public-choice.js",
   "module": "public-choice.js",
