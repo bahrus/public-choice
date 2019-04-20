@@ -6,7 +6,7 @@ import { PurrSistMyJson } from "purr-sist/purr-sist-myjson.js";
 import "purr-sist/purr-sist-idb.js";
 import { decorate } from "trans-render/decorate.js";
 import "p-d.p-u/p-d.js";
-import "xtal-frappe-chart/xtal-frappe-chart.js";
+//import "xtal-frappe-chart/xtal-frappe-chart.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { up } from "trans-render/hydrate.js";
 import { update } from "trans-render/update.js";

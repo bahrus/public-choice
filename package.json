@@ -8,14 +8,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "xtal-element": "0.0.54",
-    "xtal-material": "0.0.59",
-    "xtal-frappe-chart": "0.0.28",
+    "@google-web-components/google-chart": "3.0.4",
     "if-diff": "0.0.23",
-    "purr-sist": "0.0.51",
     "p-d.p-u": "0.0.115",
+    "purr-sist": "0.0.51",
     "trans-render": "0.0.102",
-    "@google-web-components/google-chart": "3.0.4"
+    "xtal-element": "0.0.54",
+    "xtal-material": "0.0.59"
   },
   "repository": {
     "type": "git",

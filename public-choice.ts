@@ -9,7 +9,7 @@ import "purr-sist/purr-sist-idb.js";
 import { decorate } from "trans-render/decorate.js";
 import { PurrSist } from "purr-sist/purr-sist.js";
 import "p-d.p-u/p-d.js";
-import "xtal-frappe-chart/xtal-frappe-chart.js";
+//import "xtal-frappe-chart/xtal-frappe-chart.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { DecorateArgs } from "../trans-render/init.d.js";
 import { up } from "trans-render/hydrate.js";
