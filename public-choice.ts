@@ -27,13 +27,11 @@ const mainTemplate = createTemplate(/* html */ `
     [data-allow-voting="-1"]{
         display:none;
     }
-    xtal-frappe-chart[data-allow-view-results="-1"]{
+    [data-allow-view-results="-1"]{
         visibility: hidden;
         height:5px;
     }
-    xtal-frappe-chart{
-        pointer-events: none;
-    }
+
 </style>
 <main>
     <section role="question">
