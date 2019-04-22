@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@google-web-components/google-chart": "3.0.4",
-    "if-diff": "0.0.23",
-    "p-d.p-u": "0.0.115",
-    "purr-sist": "0.0.51",
-    "trans-render": "0.0.102",
-    "xtal-element": "0.0.54",
+    "if-diff": "0.0.24",
+    "p-d.p-u": "0.0.117",
+    "purr-sist": "0.0.52",
+    "trans-render": "0.0.106",
+    "xtal-element": "0.0.56",
     "xtal-material": "0.0.59"
   },
   "repository": {

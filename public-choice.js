@@ -8,6 +8,7 @@ import { decorate } from "trans-render/decorate.js";
 import "p-d.p-u/p-d.js";
 //import "xtal-frappe-chart/xtal-frappe-chart.js";
 import { appendTag } from "trans-render/appendTag.js";
+import { chooser } from "trans-render/chooser.js";
 import { up } from "trans-render/hydrate.js";
 import { update } from "trans-render/update.js";
 import "if-diff/if-diff.js";
@@ -46,17 +47,22 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d on="value-changed" to="[data-role='saveIfUserVotedAlready']" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
     <!-- Store whether person already voted.  Put in local storage -->
     <purr-sist-idb data-role="saveIfUserVotedAlready" data-update-decorators="_linkToGuid" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
-    <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-role="getVote" read  data-update-decorators="_linkWithMaster"></purr-sist-myjson>
-    <!-- Initialize writer to current value TODO: synchronize with other votes --> 
-    <p-d on=value-changed prop=value></p-d>
-    <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-init-decorators=_mergeVoteDA data-update-decorators=_linkWithMaster data-role=mergeVote write></purr-sist-myjson>
+    <div data-is="switch">
+      <!-- Allow consumer to choose which remote persistence engine to use, based on some TBD config -->
+      <template data-tag="myjson">
+        <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
+        <purr-sist-myjson data-role="getVote" read  data-update-decorators="_linkWithMaster"></purr-sist-myjson>
+        <!-- Initialize writer to current value TODO: synchronize with other votes --> 
+        <p-d on=value-changed prop=value></p-d>
+        <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
+        <purr-sist-myjson data-init-decorators=_mergeVoteDA data-update-decorators=_linkWithMaster data-role=mergeVote write></purr-sist-myjson>
+      </template>
+    </div>
+
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    <!-- <xtal-frappe-chart data-init-decorators="_frappeDA"  data-allow-view-results="-1"></xtal-frappe-chart> -->
-    <google-chart data-init-decorators="_frappeDA"  data-allow-view-results="-1"></google-chart>
+    <google-chart data-init-decorators="_googleChartDataConverter"  data-allow-view-results="-1"></google-chart>
 </main>
 `);
 const guid = "guid";
@@ -83,7 +89,7 @@ export class PublicChoice extends XtalElement {
                 }
             }
         };
-        this._frappeDA = {
+        this._googleChartDataConverter = {
             propDefs: {
                 rawData: null
             },
@@ -104,7 +110,8 @@ export class PublicChoice extends XtalElement {
         };
         this._initContext = newRenderContext({
             main: {
-                "[data-init-decorators]": ({ target }) => this[initDecorators](target)
+                '[data-init-decorators]': ({ target }) => this[initDecorators](target),
+                'div[data-is="switch"]': ({ target }) => chooser(target, '[data-tag="myjson"]', 'afterend'),
             }
         });
         this._updateContext = newRenderContext({
