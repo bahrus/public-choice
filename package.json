@@ -5,16 +5,26 @@
   "main": "public-choice.js",
   "module": "public-choice.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node node_modules/xtal-test/serve.js"
   },
   "dependencies": {
     "@google-web-components/google-chart": "3.0.4",
-    "if-diff": "0.0.24",
-    "p-d.p-u": "0.0.117",
-    "purr-sist": "0.0.52",
-    "trans-render": "0.0.106",
-    "xtal-element": "0.0.56",
-    "xtal-material": "0.0.59"
+    "if-diff": "0.0.27",
+    "p-et-alia": "0.0.3",
+    "purr-sist": "0.0.58",
+    "trans-render": "0.0.111",
+    "xtal-element": "0.0.59",
+    "xtal-material": "0.0.63",
+    "xtal-sip": "0.0.87"
+  },
+  "devDependencies": {
+    "@types/node": "12.0.2",
+    "@types/tape": "4.2.33",
+    "@webcomponents/webcomponentsjs": "2.2.10",
+    "jiife": "0.0.12",
+    "tape": "4.10.1",
+    "xtal-test": "0.0.18"
   },
   "repository": {
     "type": "git",

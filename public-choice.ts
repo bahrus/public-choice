@@ -1,22 +1,12 @@
 import { XtalElement } from "xtal-element/xtal-element.js";
 import { createTemplate, newRenderContext } from "xtal-element/utils.js";
-import "xtal-material/xtal-radio-group-md.js";
 import { define } from "trans-render/define.js";
 import { PurrSistAttribs } from "purr-sist/purr-sist.js";
-import {PurrSistMyJson} from "purr-sist/purr-sist-myjson.js";
-import { PurrSistIDBAttribs, idb_item_set } from "purr-sist/purr-sist-idb.js";
-import "purr-sist/purr-sist-idb.js";
 import { decorate } from "trans-render/decorate.js";
-import { PurrSist } from "purr-sist/purr-sist.js";
-import "p-d.p-u/p-d.js";
-//import "xtal-frappe-chart/xtal-frappe-chart.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { DecorateArgs } from "trans-render/init.d.js";
 import {chooser} from "trans-render/chooser.js";
-import { up } from "trans-render/hydrate.js";
 import { update } from "trans-render/update.js";
-import "if-diff/if-diff.js";
-import "@google-web-components/google-chart/google-chart.js";
 import {
   initDecorators,
   updateDecorators
@@ -35,6 +25,7 @@ const mainTemplate = createTemplate(/* html */ `
 
 </style>
 <main>
+    <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md", "purr-sist-myjson", "google-chart", "p-d-x-slot-bot"]</script></xtal-sip>
     <section role="question">
         <slot name="question"></slot>
     </section>
@@ -45,8 +36,10 @@ const mainTemplate = createTemplate(/* html */ `
     <if-diff if lhs not_equals rhs="voted" tag="allowVoting" m="1"></if-diff>
     <if-diff if lhs equals rhs="voted" tag="allowViewResults" m="1"></if-diff>
     <!-- Options to vote on, passed in via light children.  -->
+    <slot name="options"></slot>
+    <p-d-x-slot-bot on="slotchange" prop="innerHTML"></p-d-x-slot-bot>
     <xtal-radio-group-md name="pronoun" data-flag="voted" data-allow-voting="-1">
-        <slot name="options"></slot>
+        
     </xtal-radio-group-md>
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
     <!-- pc_vote is a property slapped on to purr-sist-myjson via _mergeVoteDA decorator -->
@@ -65,7 +58,13 @@ const mainTemplate = createTemplate(/* html */ `
         <purr-sist-myjson data-init-decorators=_mergeVoteDA data-update-decorators=_linkWithMaster data-role=mergeVote write></purr-sist-myjson>
       </template>
     </div>
-
+    <!-- <div data-is="addToHead">
+      <template data-tag="myjson">
+        <script type="module">
+          import "purr-sist/purr-sist-myjson.js";
+        </script>
+      </template>
+    </div> -->
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
@@ -92,7 +91,7 @@ export class PublicChoice extends XtalElement {
       onPropsChange: function(propName: string, val: string) {
         switch (propName) {
           case "pc_vote":
-            const _this = (<any>this) as PurrSist;
+            const _this = (<any>this);
             const newVal = _this.newVal || _this.value;
             if (!newVal[val]) {
               newVal[val] = 0;
@@ -129,10 +128,10 @@ export class PublicChoice extends XtalElement {
     decorate(target as HTMLElement, {
       propVals: {
         masterListId: "/" + this._masterListId
-      } as PurrSist,
+      } as any,
       attribs: {
         guid: this._guid
-      } as PurrSistAttribs
+      } as any
     });
   }
 
@@ -140,7 +139,7 @@ export class PublicChoice extends XtalElement {
     decorate(target as HTMLElement, {
       attribs: {
         "store-id": this._guid
-      } as PurrSistIDBAttribs
+      } as any
     });
   }
 
@@ -148,6 +147,7 @@ export class PublicChoice extends XtalElement {
     main: {
       '[data-init-decorators]': ({ target }) => this[initDecorators](target),
       'div[data-is="switch"]': ({target}) => chooser(target, '[data-tag="myjson"]', 'afterend'),
+      //'div[data-is="addToHead"]': ({target}) => chooser(target, '[data-tag="myjson"]', 'beforeend', document.head),
     }
   });
   get initContext() {
@@ -190,19 +190,29 @@ export class PublicChoice extends XtalElement {
   }
 
   connectedCallback() {
-    this[up]([guid]);
+    this.propUp([guid]);
     this._masterListId = anySelf[masterListKey]
       ? (anySelf[masterListKey] as string)
       : "yv8uy";
     if (!(<any>self)[this._masterListId]) {
       //Create Master List component in document.head
-      appendTag(document.head, PurrSistMyJson.is, {
+      appendTag(document.head, 'purr-sist-myjson', {
         attribs: {
           id: this._masterListId,
           read: true,
           "store-id": this._masterListId
         } as PurrSistAttribs
       });
+      // // appendTag(document.head, 'script', {
+      // //   attribs:{
+      // //     type: 'module'
+      // //   },
+      // //   propVals:{
+      // //     innerHTML: `
+      // //     import "../node_modules/purr-sist/purr-sist-myjson.js";
+      // //     `
+      // //   }
+      // });
     }
     super.connectedCallback();
   }
