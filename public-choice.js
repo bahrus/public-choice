@@ -21,21 +21,19 @@ const mainTemplate = createTemplate(/* html */ `
 </style>
 <main>
     <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md", "purr-sist-myjson", "google-chart", "p-d-x-slot-bot"]</script></xtal-sip>
-    <section role="question">
-        <slot name="question"></slot>
+    <section role=question>
+        <slot name=question></slot>
     </section>
     <!-- Read from local storage whether user has voted already. store-id set from guid property in _linkToGuid().-->
-    <purr-sist-idb data-role="getUserVoteStatus" db-name="pc_vote"  data-update-decorators="_linkToGuid"  store-name="user_status" read></purr-sist-idb>
+    <purr-sist-idb data-role=getUserVoteStatus db-name=pc_vote  data-update-decorators=_linkToGuid  store-name=user_status read></purr-sist-idb>
     <!-- If already voted, hide options and display the results and vice versa -->
-    <p-d on="value-changed" to="if-diff" prop="lhs"></p-d>
-    <if-diff if lhs not_equals rhs="voted" tag="allowVoting" m="1"></if-diff>
-    <if-diff if lhs equals rhs="voted" tag="allowViewResults" m="1"></if-diff>
+    <p-d on=value-changed to=if-diff[-lhs] m=2></p-d>
+    <if-diff if -lhs not_equals rhs=voted data-key-name=allowVoting m=1></if-diff>
+    <if-diff if -lhs equals rhs=voted data-key-name=allowViewResults m=1></if-diff>
     <!-- Options to vote on, passed in via light children.  -->
     <slot name="options"></slot>
     <p-d-x-slot-bot on="slotchange" prop="innerHTML"></p-d-x-slot-bot>
-    <xtal-radio-group-md name="pronoun" data-flag="voted" data-allow-voting="-1">
-        
-    </xtal-radio-group-md>
+    <xtal-radio-group-md name="pronoun" data-flag="voted" data-allow-voting="-1"></xtal-radio-group-md>
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
     <!-- pc_vote is a property slapped on to purr-sist-myjson via _mergeVoteDA decorator -->
     <p-d on="value-changed" to="[data-role='mergeVote']" prop="pc_vote" m="1"></p-d>
@@ -109,13 +107,13 @@ export class PublicChoice extends XtalElement {
                 }
             }
         };
-        this._initContext = newRenderContext({
+        this._initRenderContext = newRenderContext({
             main: {
                 '[data-init-decorators]': ({ target }) => this[initDecorators](target),
                 'div[data-is="switch"]': ({ target }) => chooser(target, '[data-tag="myjson"]', 'afterend'),
             }
         });
-        this._updateContext = newRenderContext({
+        this._updateRenderContext = newRenderContext({
             main: {
                 "[data-update-decorators]": ({ target }) => this[updateDecorators](target)
             }
@@ -144,12 +142,12 @@ export class PublicChoice extends XtalElement {
             }
         });
     }
-    get initContext() {
-        return this._initContext;
+    get initRenderContext() {
+        return this._initRenderContext;
     }
-    get updateContext() {
-        this._updateContext.update = update;
-        return this._updateContext;
+    get updateRenderContext() {
+        this._updateRenderContext.update = update;
+        return this._updateRenderContext;
     }
     get guid() {
         return this._guid;
@@ -165,7 +163,7 @@ export class PublicChoice extends XtalElement {
         }
         super.attributeChangedCallback(n, ov, nv);
     }
-    get ready() {
+    get readyToInit() {
         return this._guid !== undefined;
     }
     static get observedAttributes() {

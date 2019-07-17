@@ -9,14 +9,14 @@
     "serve": "node node_modules/xtal-test/serve.js"
   },
   "dependencies": {
-    "@google-web-components/google-chart": "3.0.4",
-    "if-diff": "0.0.27",
-    "p-et-alia": "0.0.3",
+    "@google-web-components/google-chart": "3.0.6",
+    "if-diff": "0.0.35",
+    "p-et-alia": "0.0.11",
     "purr-sist": "0.0.58",
-    "trans-render": "0.0.111",
-    "xtal-element": "0.0.59",
-    "xtal-material": "0.0.63",
-    "xtal-sip": "0.0.87"
+    "trans-render": "0.0.126",
+    "xtal-element": "0.0.76",
+    "xtal-radio-group-md": "0.0.1",
+    "xtal-sip": "0.0.92"
   },
   "devDependencies": {
     "@types/node": "12.0.2",
