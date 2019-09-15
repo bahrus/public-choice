@@ -7,6 +7,7 @@ import { appendTag } from "trans-render/appendTag.js";
 import { DecorateArgs } from "trans-render/init.d.js";
 import {chooser} from "trans-render/chooser.js";
 import { update } from "trans-render/update.js";
+import "xtal-frappe-chart/xtal-frappe-chart.js";
 import "slot-bot/slot-bot.js";
 import {
   initDecorators,
@@ -26,7 +27,7 @@ const mainTemplate = createTemplate(/* html */ `
 
 </style>
 <main>
-    <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md", "purr-sist-myjson", "google-chart", "p-d-x-slot-bot"]</script></xtal-sip>
+    <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md", "purr-sist-myjson"]</script></xtal-sip>
     <section role=question>
         <slot name=question></slot>
     </section>
@@ -68,7 +69,8 @@ const mainTemplate = createTemplate(/* html */ `
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    <google-chart data-init-decorators="_googleChartDataConverter"  data-allow-view-results="-1"></google-chart>
+    <xtal-frappe-chart data-init-decorators="_googleChartDataConverter"  data-allow-view-results="-1"></xtal-frappe-chart>
+    <!-- <google-chart data-init-decorators="_googleChartDataConverter"  data-allow-view-results="-1"></google-chart> -->
 </main>
 `);
 
@@ -109,16 +111,34 @@ export class PublicChoice extends XtalElement {
       rawData: null
     },
     methods: {
-      onPropsChange: function(propName: string, data: any[]) {
+      onPropsChange: function(propName: string, data: any) {
         switch (propName) {
           case "rawData":
-            const labels = ["Answer", "Votes"];
-            const fd = [labels];
-            for(var key in data){
-              fd.push([key, data[key]]);
-            }
-            (<any>this).data = fd;
-            break;
+              const labels = [];
+              for (const key in data) {
+                  if (key.startsWith('_')) continue;
+                  labels.push(key);
+              }
+              if (labels.length === 0) return;
+              const fd = {
+                  title: 'Votes',
+                  data: {
+                      labels: labels,
+                      datasets: [
+                          {
+                              name: "Votes",
+                              color: "light-blue",
+                              values: labels.map(key => isNaN(data[key]) ? 0 : data[key])
+                          }
+                      ]
+                  },
+                  "type": "bar",
+                  "height": 250,
+                  "isNavigable": true
+              };
+              //console.log(fd);
+              (<any>this).data = fd;
+              break;
         }
       }
     }
