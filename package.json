@@ -10,11 +10,12 @@
   },
   "dependencies": {
     "@google-web-components/google-chart": "3.0.6",
-    "if-diff": "0.0.35",
-    "p-et-alia": "0.0.11",
-    "purr-sist": "0.0.58",
-    "trans-render": "0.0.126",
-    "xtal-element": "0.0.76",
+    "if-diff": "0.0.36",
+    "slot-bot": "0.0.4",
+    "p-et-alia": "0.0.46",
+    "purr-sist": "0.0.60",
+    "trans-render": "0.0.131",
+    "xtal-element": "0.0.83",
     "xtal-radio-group-md": "0.0.1",
     "xtal-sip": "0.0.92"
   },
@@ -23,8 +24,8 @@
     "@types/tape": "4.2.33",
     "@webcomponents/webcomponentsjs": "2.2.10",
     "jiife": "0.0.12",
-    "tape": "4.10.1",
-    "xtal-test": "0.0.18"
+    "tape": "4.11.0",
+    "xtal-test": "0.0.20"
   },
   "repository": {
     "type": "git",

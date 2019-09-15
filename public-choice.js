@@ -5,6 +5,7 @@ import { decorate } from "trans-render/decorate.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { chooser } from "trans-render/chooser.js";
 import { update } from "trans-render/update.js";
+import "slot-bot/slot-bot.js";
 import { initDecorators, updateDecorators } from "xtal-element/data-decorators.js";
 export const masterListKey = Symbol("masterListKey");
 const anySelf = self;
@@ -32,7 +33,8 @@ const mainTemplate = createTemplate(/* html */ `
     <if-diff if -lhs equals rhs=voted data-key-name=allowViewResults m=1></if-diff>
     <!-- Options to vote on, passed in via light children.  -->
     <slot name="options"></slot>
-    <p-d-x-slot-bot on="slotchange" prop="innerHTML"></p-d-x-slot-bot>
+    <!-- <p-d-x-slot-bot on="slotchange" prop="innerHTML"></p-d-x-slot-bot> -->
+    <slot-bot></slot-bot>
     <xtal-radio-group-md name="pronoun" data-flag="voted" data-allow-voting="-1"></xtal-radio-group-md>
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
     <!-- pc_vote is a property slapped on to purr-sist-myjson via _mergeVoteDA decorator -->
