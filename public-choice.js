@@ -64,8 +64,8 @@ const mainTemplate = createTemplate(/* html */ `
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
-    <xtal-frappe-chart data-init-decorators="_googleChartDataConverter"  data-allow-view-results="-1"></xtal-frappe-chart>
-    <!-- <google-chart data-init-decorators="_googleChartDataConverter"  data-allow-view-results="-1"></google-chart> -->
+    <xtal-frappe-chart data-init-decorators="_frappeChartDataConverter"  data-allow-view-results="-1"></xtal-frappe-chart>
+    <!-- <google-chart data-init-decorators="_frappeChartDataConverter"  data-allow-view-results="-1"></google-chart> -->
 </main>
 `);
 const guid = "guid";
@@ -92,7 +92,7 @@ export class PublicChoice extends XtalElement {
                 }
             }
         };
-        this._googleChartDataConverter = {
+        this._frappeChartDataConverter = {
             propDefs: {
                 rawData: null
             },
