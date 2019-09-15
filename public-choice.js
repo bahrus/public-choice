@@ -207,16 +207,6 @@ export class PublicChoice extends XtalElement {
                     "store-id": this._masterListId
                 }
             });
-            // // appendTag(document.head, 'script', {
-            // //   attribs:{
-            // //     type: 'module'
-            // //   },
-            // //   propVals:{
-            // //     innerHTML: `
-            // //     import "../node_modules/purr-sist/purr-sist-myjson.js";
-            // //     `
-            // //   }
-            // });
         }
         super.connectedCallback();
     }
