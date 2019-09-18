@@ -5,7 +5,7 @@ import { decorate } from "trans-render/decorate.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { chooser } from "trans-render/chooser.js";
 import { update } from "trans-render/update.js";
-import "xtal-frappe-chart/xtal-frappe-chart.js";
+//import "xtal-frappe-chart/xtal-frappe-chart.js";
 import "slot-bot/slot-bot.js";
 import { initDecorators, updateDecorators } from "xtal-element/data-decorators.js";
 export const masterListKey = Symbol("masterListKey");
@@ -22,7 +22,7 @@ const mainTemplate = createTemplate(/* html */ `
 
 </style>
 <main>
-    <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md", "purr-sist-myjson"]</script></xtal-sip>
+    <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md", "purr-sist-myjson", "xtal-frappe-chart[data-allow-view-results='1']"]</script></xtal-sip>
     <section role=question>
         <slot name=question></slot>
     </section>
@@ -31,7 +31,7 @@ const mainTemplate = createTemplate(/* html */ `
     <!-- If already voted, hide options and display the results and vice versa -->
     <p-d on=value-changed to=if-diff[-lhs] m=2></p-d>
     <if-diff if -lhs not_equals rhs=voted data-key-name=allowVoting m=1></if-diff>
-    <if-diff if -lhs equals rhs=voted data-key-name=allowViewResults m=1></if-diff>
+    <if-diff if -lhs equals rhs=voted data-key-name=allowViewResults m=2></if-diff>
     <!-- Options to vote on, passed in via light children.  -->
     <slot name="options"></slot>
     <!-- <p-d-x-slot-bot on="slotchange" prop="innerHTML"></p-d-x-slot-bot> -->
@@ -54,18 +54,16 @@ const mainTemplate = createTemplate(/* html */ `
         <purr-sist-myjson data-init-decorators=_mergeVoteDA data-update-decorators=_linkWithMaster data-role=mergeVote write></purr-sist-myjson>
       </template>
     </div>
-    <!-- <div data-is="addToHead">
-      <template data-tag="myjson">
-        <script type="module">
-          import "purr-sist/purr-sist-myjson.js";
-        </script>
-      </template>
-    </div> -->
+
 
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
     <xtal-frappe-chart data-init-decorators="_frappeChartDataConverter"  data-allow-view-results="-1"></xtal-frappe-chart>
-    <!-- <google-chart data-init-decorators="_frappeChartDataConverter"  data-allow-view-results="-1"></google-chart> -->
+    <div data-allow-view-results="0">
+      <template>
+        <script type="module">import('xtal-frappe-chart/xtal-frappe-chart.js');</script>
+      </template>
+    </div>
 </main>
 `);
 const guid = "guid";
