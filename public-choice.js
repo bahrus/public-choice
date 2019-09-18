@@ -5,7 +5,6 @@ import { decorate } from "trans-render/decorate.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { chooser } from "trans-render/chooser.js";
 import { update } from "trans-render/update.js";
-//import "xtal-frappe-chart/xtal-frappe-chart.js";
 import "slot-bot/slot-bot.js";
 import { initDecorators, updateDecorators } from "xtal-element/data-decorators.js";
 export const masterListKey = Symbol("masterListKey");
@@ -22,7 +21,7 @@ const mainTemplate = createTemplate(/* html */ `
 
 </style>
 <main>
-    <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md", "purr-sist-myjson", "xtal-frappe-chart[data-allow-view-results='1']"]</script></xtal-sip>
+    <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md[data-allow-voting='1']", "purr-sist-myjson", "xtal-frappe-chart[data-allow-view-results='1']"]</script></xtal-sip>
     <section role=question>
         <slot name=question></slot>
     </section>
@@ -59,11 +58,6 @@ const mainTemplate = createTemplate(/* html */ `
     <!-- pass persisted votes to chart element -->
     <p-d on="value-changed" prop="rawData"></p-d>
     <xtal-frappe-chart data-init-decorators="_frappeChartDataConverter"  data-allow-view-results="-1"></xtal-frappe-chart>
-    <div data-allow-view-results="0">
-      <template>
-        <script type="module">import('xtal-frappe-chart/xtal-frappe-chart.js');</script>
-      </template>
-    </div>
 </main>
 `);
 const guid = "guid";
