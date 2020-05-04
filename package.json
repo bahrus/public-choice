@@ -9,20 +9,19 @@
     "serve": "node node_modules/xtal-test/serve.js"
   },
   "dependencies": {
-    "xtal-frappe-chart": "0.0.62",
-    "if-diff": "0.0.41",
+    "xtal-frappe-chart": "0.0.70",
+    "if-diff": "0.0.43",
     "slot-bot": "0.0.5",
-    "p-et-alia": "0.0.66",
+    "p-et-alia": "0.0.74",
     "purr-sist": "0.0.60",
-    "trans-render": "0.0.142",
-    "xtal-element": "0.0.99",
-    "xtal-radio-group-md": "0.0.3",
+    "trans-render": "0.0.168",
+    "xtal-element": "0.0.123",
+    "xtal-radio-group-md": "0.0.4",
     "xtal-sip": "0.0.97"
   },
   "devDependencies": {
-    "@types/node": "12.0.2",
-    "@webcomponents/webcomponentsjs": "2.4.0",
-    "xtal-test": "0.0.31"
+    "@webcomponents/webcomponentsjs": "2.4.3",
+    "xtal-test": "0.0.44"
   },
   "repository": {
     "type": "git",

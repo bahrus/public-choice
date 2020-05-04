@@ -1,16 +1,15 @@
-import { XtalElement } from "xtal-element/xtal-element.js";
-import { createTemplate, newRenderContext } from "xtal-element/utils.js";
+import { XtalElement } from "xtal-element/XtalElement.js";
+import { createTemplate } from "trans-render/createTemplate.js";
 import { define } from "trans-render/define.js";
 import { decorate } from "trans-render/decorate.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { chooser } from "trans-render/chooser.js";
-import { update } from "trans-render/update.js";
-import "slot-bot/slot-bot.js";
+//import "slot-bot/slot-bot.js";
 import { initDecorators, updateDecorators } from "xtal-element/data-decorators.js";
 export const masterListKey = Symbol("masterListKey");
 const anySelf = self;
 const mainTemplate = createTemplate(/* html */ `
-<style>
+<!-- <style>
     [data-allow-voting="-1"]{
         display:none;
     }
@@ -19,7 +18,7 @@ const mainTemplate = createTemplate(/* html */ `
         height:5px;
     }
 
-</style>
+</style> -->
 <main>
     <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md[data-allow-voting='1']", "purr-sist-myjson", "xtal-frappe-chart[data-allow-view-results='1']"]</script></xtal-sip>
     <section role=question>
@@ -31,11 +30,13 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d on=value-changed to=if-diff[-lhs] m=2></p-d>
     <if-diff if -lhs not_equals rhs=voted data-key-name=allowVoting m=1></if-diff>
     <if-diff if -lhs equals rhs=voted data-key-name=allowViewResults m=2></if-diff>
-    <!-- Options to vote on, passed in via light children.  -->
-    <slot name="options"></slot>
+    
     <!-- <p-d-x-slot-bot on="slotchange" prop="innerHTML"></p-d-x-slot-bot> -->
-    <slot-bot></slot-bot>
-    <xtal-radio-group-md name="pronoun" data-flag="voted" data-allow-voting="-1"></xtal-radio-group-md>
+    <!-- <slot-bot></slot-bot> -->
+    <xtal-radio-group-md name="pronoun" data-flag="voted" data-allow-voting="-1">
+      <!-- Options to vote on, passed in via light children.  -->
+      <slot name="options"></slot>
+    </xtal-radio-group-md>
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
     <!-- pc_vote is a property slapped on to purr-sist-myjson via _mergeVoteDA decorator -->
     <p-d on="value-changed" to="[data-role='mergeVote']" prop="pc_vote" m="1"></p-d>
@@ -64,6 +65,15 @@ const guid = "guid";
 export class PublicChoice extends XtalElement {
     constructor() {
         super(...arguments);
+        this.readyToRender = true;
+        this.mainTemplate = mainTemplate;
+        this.initTransform = {
+            main: {
+                '[data-init-decorators]': ({ target }) => this[initDecorators](target),
+                'div[data-is="switch"]': ({ target }) => chooser(target, '[data-tag="myjson"]', 'afterend'),
+                "[data-update-decorators]": ({ target }) => this[updateDecorators](target)
+            }
+        };
         this._mergeVoteDA = {
             propDefs: {
                 pc_vote: null
@@ -123,23 +133,12 @@ export class PublicChoice extends XtalElement {
                 }
             }
         };
-        this._initRenderContext = newRenderContext({
-            main: {
-                '[data-init-decorators]': ({ target }) => this[initDecorators](target),
-                'div[data-is="switch"]': ({ target }) => chooser(target, '[data-tag="myjson"]', 'afterend'),
-            }
-        });
-        this._updateRenderContext = newRenderContext({
-            main: {
-                "[data-update-decorators]": ({ target }) => this[updateDecorators](target)
-            }
-        });
     }
     static get is() {
         return "public-choice";
     }
-    get mainTemplate() {
-        return mainTemplate;
+    get readyToInit() {
+        return this._guid !== undefined;
     }
     _linkWithMaster(target) {
         decorate(target, {
@@ -158,13 +157,6 @@ export class PublicChoice extends XtalElement {
             }
         });
     }
-    get initRenderContext() {
-        return this._initRenderContext;
-    }
-    get updateRenderContext() {
-        this._updateRenderContext.update = update;
-        return this._updateRenderContext;
-    }
     get guid() {
         return this._guid;
     }
@@ -179,9 +171,6 @@ export class PublicChoice extends XtalElement {
         }
         super.attributeChangedCallback(n, ov, nv);
     }
-    get readyToInit() {
-        return this._guid !== undefined;
-    }
     static get observedAttributes() {
         return super.observedAttributes.concat([guid]);
     }
@@ -191,14 +180,11 @@ export class PublicChoice extends XtalElement {
             ? anySelf[masterListKey]
             : "yv8uy";
         if (!self[this._masterListId]) {
-            //Create Master List component in document.head
-            appendTag(document.head, 'purr-sist-myjson', {
-                attribs: {
+            appendTag(document.head, 'purr-sist-myjson', [{}, {}, {
                     id: this._masterListId,
                     read: true,
                     "store-id": this._masterListId
-                }
-            });
+                }]);
         }
         super.connectedCallback();
     }
