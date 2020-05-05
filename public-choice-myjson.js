@@ -3,7 +3,11 @@ import { createTemplate } from "trans-render/createTemplate.js";
 import { define } from "trans-render/define.js";
 import { decorate } from "trans-render/decorate.js";
 import { appendTag } from "trans-render/appendTag.js";
-import { chooser } from "trans-render/chooser.js";
+import('p-et-alia/p-d.js');
+import('if-diff/if-diff.js');
+import('purr-sist/purr-sist-idb');
+import('xtal-radio-group-md/xtal-radio-group-md.js');
+//import { update } from "trans-render/update.js";
 //import "slot-bot/slot-bot.js";
 import { initDecorators, updateDecorators } from "xtal-element/data-decorators.js";
 export const masterListKey = Symbol("masterListKey");
@@ -20,7 +24,6 @@ const mainTemplate = createTemplate(/* html */ `
 
 </style> -->
 <main>
-    <xtal-sip><script nomodule>["purr-sist-idb", "p-d", "if-diff", "xtal-radio-group-md[data-allow-voting='1']", "purr-sist-myjson", "xtal-frappe-chart[data-allow-view-results='1']"]</script></xtal-sip>
     <section role=question>
         <slot name=question></slot>
     </section>
@@ -30,9 +33,7 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d on=value-changed to=if-diff[-lhs] m=2></p-d>
     <if-diff if -lhs not_equals rhs=voted data-key-name=allowVoting m=1></if-diff>
     <if-diff if -lhs equals rhs=voted data-key-name=allowViewResults m=2></if-diff>
-    
-    <!-- <p-d-x-slot-bot on="slotchange" prop="innerHTML"></p-d-x-slot-bot> -->
-    <!-- <slot-bot></slot-bot> -->
+
     <xtal-radio-group-md name="pronoun" data-flag="voted" data-allow-voting="-1">
       <!-- Options to vote on, passed in via light children.  -->
       <slot name="options"></slot>
@@ -43,17 +44,15 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d on="value-changed" to="[data-role='saveIfUserVotedAlready']" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
     <!-- Store whether person already voted.  Put in local storage -->
     <purr-sist-idb data-role="saveIfUserVotedAlready" data-update-decorators="_linkToGuid" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
-    <div data-is="switch">
-      <!-- Allow consumer to choose which remote persistence engine to use, based on some TBD config -->
-      <template data-tag="myjson">
-        <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-        <purr-sist-myjson data-role="getVote" read  data-update-decorators="_linkWithMaster"></purr-sist-myjson>
-        <!-- Initialize writer to current value TODO: synchronize with other votes --> 
-        <p-d on=value-changed prop=value></p-d>
-        <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-        <purr-sist-myjson data-init-decorators=_mergeVoteDA data-update-decorators=_linkWithMaster data-role=mergeVote write></purr-sist-myjson>
-      </template>
-    </div>
+    
+    
+    <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
+    <purr-sist-myjson data-role="getVote" read  data-update-decorators="_linkWithMaster"></purr-sist-myjson>
+    <!-- Initialize writer to current value TODO: synchronize with other votes --> 
+    <p-d on=value-changed prop=value></p-d>
+    <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
+    <purr-sist-myjson data-init-decorators=_mergeVoteDA data-update-decorators=_linkWithMaster data-role=mergeVote write></purr-sist-myjson>
+
 
 
     <!-- pass persisted votes to chart element -->
@@ -62,7 +61,7 @@ const mainTemplate = createTemplate(/* html */ `
 </main>
 `);
 const guid = "guid";
-export class PublicChoice extends XtalElement {
+export class PublicChoiceMyJSON extends XtalElement {
     constructor() {
         super(...arguments);
         this.readyToRender = true;
@@ -135,7 +134,7 @@ export class PublicChoice extends XtalElement {
         };
     }
     static get is() {
-        return "public-choice";
+        return 'public-choice-myjson';
     }
     get readyToInit() {
         return this._guid !== undefined;
@@ -189,4 +188,4 @@ export class PublicChoice extends XtalElement {
         super.connectedCallback();
     }
 }
-define(PublicChoice);
+define(PublicChoiceMyJSON);
