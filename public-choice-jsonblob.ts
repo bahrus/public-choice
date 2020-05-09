@@ -7,9 +7,9 @@ import { appendTag } from "trans-render/appendTag.js";
 import { DecorateArgs, TransformRules, PEASettings  } from "trans-render/types.d.js";
 //import('p-et-alia/p-d.js');
 import {extend} from 'p-et-alia/p-d-x.js';
+import { PurrSistJsonBlob } from 'purr-sist/purr-sist-jsonblob';
 import('if-diff/if-diff.js');
 import('purr-sist/purr-sist-idb.js');
-import('purr-sist/purr-sist-jsonblob.js')
 import('xtal-radio-group-md/xtal-radio-group-md.js');
 //import { update } from "trans-render/update.js";
 //import "slot-bot/slot-bot.js";
@@ -33,10 +33,10 @@ const mainTemplate = createTemplate(/* html */ `
       <slot name=options></slot>
     </xtal-radio-group-md>
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
-    <p-d-x-merge-vote on=value-changed to=purr-sist-json-blob[-new-val] m=1 skip-init></p-d-x-merge-vote>
-    <p-d-x-mark-voted on=value-changed to=purr-sist-idb[-new-val] m=1 skip-init></p-d-x-mark-voted>
+    <p-d on=value-changed to=[-new-vote] m=1 skip-init></p-d>
+    <p-d-x-mark-voted on=value-changed to=[-new-val] m=1 skip-init></p-d-x-mark-voted>
     <!-- Store whether person already voted.  Put in local storage -->
-    <purr-sist-idb write db-name=pc_vote -master-list-id  -store-id store-name=user_status -new-val></purr-sist-idb>
+    <!-- <purr-sist-idb write db-name=pc_vote -master-list-id  -store-id store-name=user_status -new-val></purr-sist-idb> -->
     
     
     <!-- Retrieve vote tally from jsonblob detail record linked -->
@@ -44,7 +44,7 @@ const mainTemplate = createTemplate(/* html */ `
     <!-- Initialize writer to current value TODO: synchronize with other votes --> 
     <p-d on=value-changed prop=value></p-d>
     <!-- Persist vote to jsonblob detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-jsonblob -master-list-id write -guid -new-val></purr-sist-jsonblob>
+    <purr-sist-votes-to-json-blob -master-list-id write -guid -new-vote></purr-sist-votes-to-json-blob>
 
 
 
@@ -87,7 +87,7 @@ export class PublicChoiceJsonBlob extends XtalElement {
     ({masterListId} : PublicChoiceJsonBlob) =>({
       main:{
         '[-master-list-id]': ({target}) =>{
-          (<any>target).masterListId = masterListId;
+          (<any>target).masterListId = '/' + masterListId;
         }
       }
 
@@ -139,7 +139,7 @@ export class PublicChoiceJsonBlob extends XtalElement {
 
       appendTag(document.head, 'purr-sist-jsonblob',
         [{}, {}, {
-          id: this._masterListId,
+          id: masterListId,
           //write: true,
           //new: true,
           read: true,
@@ -193,22 +193,27 @@ extend({
   }
 })
 
-extend({
-  name: 'merge-vote',
-  valFromEvent: e =>{
-    console.log(e);
-    // onPropsChange: function(propName: string, val: string) {
-    //   switch (propName) {
-    //     case "pc_vote":
-    //       const _this = (<any>this);
-    //       const newVal = _this.newVal || _this.value;
-    //       if (!newVal[val]) {
-    //         newVal[val] = 0;
-    //       }
-    //       newVal[val]++;
-    //       _this.newVal = { ...newVal };
-    //       break;
-    //   }
-    // }
+
+class PurrSistVotesToJsonBlob extends PurrSistJsonBlob{
+  static get is(){
+    return 'purr-sist-votes-to-json-blob';
+  };
+  _newVote!: string
+  get newVote(){
+    return this._newVote;
   }
-})
+  set newVote(option: string){
+    this._newVote = option;
+    let newVal = this.value;
+    if(typeof newVal !== 'object'){
+      newVal = {};
+    }
+    if(newVal[option] === undefined){
+      newVal[option] = 1;
+    }else{
+      newVal[option]++;
+    }
+    this.newVal = newVal;
+  }
+}
+define(PurrSistVotesToJsonBlob);
