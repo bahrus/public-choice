@@ -5,14 +5,12 @@ import { PurrSistAttribs} from "purr-sist/purr-sist.js";
 import { decorate } from "trans-render/decorate.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { DecorateArgs, TransformRules, PEASettings  } from "trans-render/types.d.js";
-//import('p-et-alia/p-d.js');
 import {extend} from 'p-et-alia/p-d-x.js';
 import { PurrSistJsonBlob } from 'purr-sist/purr-sist-jsonblob';
 import('if-diff/if-diff.js');
 import('purr-sist/purr-sist-idb.js');
 import('xtal-radio-group-md/xtal-radio-group-md.js');
-//import { update } from "trans-render/update.js";
-//import "slot-bot/slot-bot.js";
+import 'xtal-frappe-chart/xtal-frappe-chart.js';
 
 export const masterListKey = Symbol("masterListKey");
 const anySelf = <any>self;
@@ -36,7 +34,7 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d on=value-changed to=[-new-vote] m=1 skip-init></p-d>
     <p-d-x-mark-voted on=value-changed to=[-new-val] m=1 skip-init></p-d-x-mark-voted>
     <!-- Store whether person already voted.  Put in local storage -->
-    <!-- <purr-sist-idb write db-name=pc_vote -master-list-id  -store-id store-name=user_status -new-val></purr-sist-idb> -->
+    <purr-sist-idb write db-name=pc_vote -master-list-id  -store-id store-name=user_status -new-val></purr-sist-idb>
     
     
     <!-- Retrieve vote tally from jsonblob detail record linked -->
@@ -49,7 +47,7 @@ const mainTemplate = createTemplate(/* html */ `
 
 
     <!-- pass persisted votes to chart element -->
-    <p-d-x-to-frappe-chart-data on=value-changed to=[-data]></p-d-x-to-frappe-chart-data>
+    <p-d-x-to-frappe-chart-data on=value-changed to=[-data] skip-init></p-d-x-to-frappe-chart-data>
     <div data-allow-view-results="0">
       <template><xtal-frappe-chart -data></xtal-frappe-chart></template>
     </div>
@@ -164,32 +162,30 @@ extend({
 extend({
   name:'to-frappe-chart-data',
   valFromEvent: e => {
-    console.log(e);
-
-    // const labels = [];
-    // for (const key in data) {
-    //     if (key.startsWith('_')) continue;
-    //     labels.push(key);
-    // }
-    // if (labels.length === 0) return;
-    // const fd = {
-    //     title: 'Votes',
-    //     data: {
-    //         labels: labels,
-    //         datasets: [
-    //             {
-    //                 name: "Votes",
-    //                 color: "light-blue",
-    //                 values: labels.map(key => isNaN(data[key]) ? 0 : data[key])
-    //             }
-    //         ]
-    //     },
-    //     "type": "bar",
-    //     "height": 250,
-    //     "isNavigable": true
-    // };
-    // //console.log(fd);
-    // (<any>this).data = fd;
+    const data = (<any>e).detail!.value;
+    const labels = [];
+    for (const key in data) {
+        if (key.startsWith('_')) continue;
+        labels.push(key);
+    }
+    if (labels.length === 0) return;
+    const fd = {
+        title: 'Votes',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    name: "Votes",
+                    color: "light-blue",
+                    values: labels.map(key => isNaN(data[key]) ? 0 : data[key])
+                }
+            ]
+        },
+        "type": "bar",
+        "height": 250,
+        "isNavigable": true
+    };
+    return fd;
   }
 })
 
