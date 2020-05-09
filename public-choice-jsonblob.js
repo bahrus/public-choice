@@ -18,24 +18,24 @@ const mainTemplate = createTemplate(/* html */ `
         <slot name=question></slot>
     </section>
     <!-- Read from local storage whether user has voted already. store-id set from guid property in _linkToGuid().-->
-    <purr-sist-idb data-role=getUserVoteStatus db-name=pc_vote store-name=user_status read -store-id></purr-sist-idb>
+    <purr-sist-idb disabled data-role=getUserVoteStatus db-name=pc_vote store-name=user_status read -store-id></purr-sist-idb>
     <!-- If already voted, hide options and display the results and vice versa -->
-    <p-d on=value-changed to=if-diff[-lhs] m=2></p-d>
+    <p-d on=value-changed to=if-diff[-lhs] m=2 skip-init></p-d>
     <if-diff if -lhs not_equals rhs=voted data-key-name=allowVoting m=1></if-diff>
     <if-diff if -lhs equals rhs=voted data-key-name=allowViewResults m=2></if-diff>
 
-    <xtal-radio-group-md name=pronoun data-allow-voting="-1">
+    <xtal-radio-group-md name=pronoun data-allow-voting=-1 disabled=2>
       <!-- Options to vote on, passed in via light children.  -->
-      <slot name="options"></slot>
+      <slot name=options></slot>
     </xtal-radio-group-md>
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
-    <p-d-x-merge-vote on=value-changed to=[-new-val] m=1></p-d-x-merge-vote>
-    <p-d on="value-changed" to="[data-role='saveIfUserVotedAlready']" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
+    <p-d-x-merge-vote on=value-changed to=purr-sist-json-blob[-new-val] m=1 skip-init></p-d-x-merge-vote>
+    <p-d-x-mark-voted on=value-changed to=purr-sist-idb[-new-val] m=1 skip-init></p-d-x-mark-voted>
     <!-- Store whether person already voted.  Put in local storage -->
-    <purr-sist-idb write -master-list-id  -store-id store-name="user_status"></purr-sist-idb>
+    <purr-sist-idb write db-name=pc_vote -master-list-id  -store-id store-name=user_status -new-val></purr-sist-idb>
     
     
-    <!-- Retrieve vote tally from jsonblob detail record linked (via updateContext) to master list created in connection callback -->
+    <!-- Retrieve vote tally from jsonblob detail record linked -->
     <purr-sist-jsonblob read -guid -master-list-id ></purr-sist-jsonblob>
     <!-- Initialize writer to current value TODO: synchronize with other votes --> 
     <p-d on=value-changed prop=value></p-d>
@@ -46,9 +46,9 @@ const mainTemplate = createTemplate(/* html */ `
 
     <!-- pass persisted votes to chart element -->
     <p-d-x-to-frappe-chart-data on=value-changed to=[-data]></p-d-x-to-frappe-chart-data>
-    <template data-allow-view-results="-1">
-      <xtal-frappe-chart -data></xtal-frappe-chart>
-    </template>
+    <div data-allow-view-results="0">
+      <template><xtal-frappe-chart -data></xtal-frappe-chart></template>
+    </div>
     
 </main>
 `);
@@ -131,9 +131,15 @@ export class PublicChoiceJsonBlob extends XtalElement {
 }
 define(PublicChoiceJsonBlob);
 extend({
+    name: 'mark-voted',
+    valFromEvent: e => {
+        return 'voted';
+    }
+});
+extend({
     name: 'to-frappe-chart-data',
     valFromEvent: e => {
-        debugger;
+        console.log(e);
         // const labels = [];
         // for (const key in data) {
         //     if (key.startsWith('_')) continue;
@@ -163,7 +169,7 @@ extend({
 extend({
     name: 'merge-vote',
     valFromEvent: e => {
-        debugger;
+        console.log(e);
         // onPropsChange: function(propName: string, val: string) {
         //   switch (propName) {
         //     case "pc_vote":
