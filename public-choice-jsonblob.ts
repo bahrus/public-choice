@@ -1,13 +1,15 @@
-import { XtalElement } from "xtal-element/XtalElement.js";
+import { XtalElement, SelectiveUpdate } from "xtal-element/XtalElement.js";
 import { createTemplate } from "trans-render/createTemplate.js";
 import { define } from "trans-render/define.js";
 import { PurrSistAttribs } from "purr-sist/purr-sist.js";
 import { decorate } from "trans-render/decorate.js";
 import { appendTag } from "trans-render/appendTag.js";
-import { DecorateArgs, TransformRules, PEASettings } from "trans-render/types.d.js";
-import('p-et-alia/p-d.js');
+import { DecorateArgs, TransformRules, PEASettings  } from "trans-render/types.d.js";
+//import('p-et-alia/p-d.js');
+import {extend} from 'p-et-alia/p-d-x.js';
 import('if-diff/if-diff.js');
-import('purr-sist/purr-sist-idb');
+import('purr-sist/purr-sist-idb.js');
+import('purr-sist/purr-sist-jsonblob.js')
 import('xtal-radio-group-md/xtal-radio-group-md.js');
 //import { update } from "trans-render/update.js";
 //import "slot-bot/slot-bot.js";
@@ -18,22 +20,12 @@ import {
 export const masterListKey = Symbol("masterListKey");
 const anySelf = <any>self;
 const mainTemplate = createTemplate(/* html */ `
-<!-- <style>
-    [data-allow-voting="-1"]{
-        display:none;
-    }
-    [data-allow-view-results="-1"]{
-        visibility: hidden;
-        height:5px;
-    }
-
-</style> -->
 <main>
     <section role=question>
         <slot name=question></slot>
     </section>
     <!-- Read from local storage whether user has voted already. store-id set from guid property in _linkToGuid().-->
-    <purr-sist-idb data-role=getUserVoteStatus db-name=pc_vote  data-update-decorators=_linkToGuid  store-name=user_status read></purr-sist-idb>
+    <purr-sist-idb data-role=getUserVoteStatus db-name=pc_vote store-name=user_status read -store-id></purr-sist-idb>
     <!-- If already voted, hide options and display the results and vice versa -->
     <p-d on=value-changed to=if-diff[-lhs] m=2></p-d>
     <if-diff if -lhs not_equals rhs=voted data-key-name=allowVoting m=1></if-diff>
@@ -44,33 +36,36 @@ const mainTemplate = createTemplate(/* html */ `
       <slot name="options"></slot>
     </xtal-radio-group-md>
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
-    <!-- pc_vote is a property slapped on to purr-sist-myjson via _mergeVoteDA decorator -->
+    <!-- pc_vote is a property slapped on to purr-sist-jsonblob via _mergeVoteDA decorator -->
     <p-d on="value-changed" to="[data-role='mergeVote']" prop="pc_vote" m="1"></p-d>
     <p-d on="value-changed" to="[data-role='saveIfUserVotedAlready']" prop="newVal" m="1" skip-init val="target.dataset.flag"></p-d>
     <!-- Store whether person already voted.  Put in local storage -->
-    <purr-sist-idb data-role="saveIfUserVotedAlready" data-update-decorators="_linkToGuid" db-name="pc_vote" store-name="user_status" write></purr-sist-idb>
+    <purr-sist-idb data-role=saveIfUserVotedAlready db-name="pc_vote" store-name="user_status" write -store-id></purr-sist-idb>
     
     
-    <!-- Retrieve vote tally from MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-role="getVote" read  data-update-decorators="_linkWithMaster"></purr-sist-myjson>
+    <!-- Retrieve vote tally from jsonblob detail record linked (via updateContext) to master list created in connection callback -->
+    <purr-sist-jsonblob data-role="getVote" read  data-update-decorators="_linkWithMaster"></purr-sist-jsonblob>
     <!-- Initialize writer to current value TODO: synchronize with other votes --> 
     <p-d on=value-changed prop=value></p-d>
-    <!-- Persist vote to MyJSON detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-myjson data-init-decorators=_mergeVoteDA data-update-decorators=_linkWithMaster data-role=mergeVote write></purr-sist-myjson>
+    <!-- Persist vote to jsonblob detail record linked (via updateContext) to master list created in connection callback -->
+    <purr-sist-jsonblob data-init-decorators=_mergeVoteDA data-update-decorators=_linkWithMaster data-role=mergeVote write></purr-sist-jsonblob>
 
 
 
     <!-- pass persisted votes to chart element -->
-    <p-d on="value-changed" prop="rawData"></p-d>
-    <xtal-frappe-chart data-init-decorators="_frappeChartDataConverter"  data-allow-view-results="-1"></xtal-frappe-chart>
+    <p-d-x-to-frappe-chart-data on=value-changed to=[-data]></p-d-x-to-frappe-chart-data>
+    <template data-allow-view-results="-1">
+      <xtal-frappe-chart -data></xtal-frappe-chart>
+    </template>
+    
 </main>
 `);
 
 const guid = "guid";
 
-export class PublicChoiceMyJSON extends XtalElement {
+export class PublicChoiceJsonBlob extends XtalElement {
   static get is() {
-    return 'public-choice-myjson';
+    return 'public-choice-jsonblob';
   }
   
   get readyToInit() {
@@ -80,13 +75,17 @@ export class PublicChoiceMyJSON extends XtalElement {
 
   mainTemplate = mainTemplate;
 
-  initTransform = {
-    main:{
-      '[data-init-decorators]': ({ target }) => this[initDecorators](target),
-      'div[data-is="switch"]': ({target}) => chooser(target, '[data-tag="myjson"]', 'afterend'),
-      "[data-update-decorators]": ({ target }) => this[updateDecorators](target)
-    }
-  } as TransformRules;
+  initTransform = {} as TransformRules;
+
+  updateTransforms = [
+    ({guid} : PublicChoiceJsonBlob) => ({
+      main:{
+        '[-store-id]': ({target}) =>{
+          target.storeId = guid;
+        }
+      }
+    }) as TransformRules
+  ] as SelectiveUpdate[];
 
   // selectiveUpdateTransforms = [
 
@@ -125,43 +124,7 @@ export class PublicChoiceMyJSON extends XtalElement {
     }
   };
 
-  _frappeChartDataConverter: DecorateArgs = {
-    propDefs: {
-      rawData: null
-    },
-    methods: {
-      onPropsChange: function(propName: string, data: any) {
-        switch (propName) {
-          case "rawData":
-              const labels = [];
-              for (const key in data) {
-                  if (key.startsWith('_')) continue;
-                  labels.push(key);
-              }
-              if (labels.length === 0) return;
-              const fd = {
-                  title: 'Votes',
-                  data: {
-                      labels: labels,
-                      datasets: [
-                          {
-                              name: "Votes",
-                              color: "light-blue",
-                              values: labels.map(key => isNaN(data[key]) ? 0 : data[key])
-                          }
-                      ]
-                  },
-                  "type": "bar",
-                  "height": 250,
-                  "isNavigable": true
-              };
-              //console.log(fd);
-              (<any>this).data = fd;
-              break;
-        }
-      }
-    }
-  };
+
 
   _linkWithMaster(target: Element) {
     decorate(target as HTMLElement, {
@@ -213,18 +176,53 @@ export class PublicChoiceMyJSON extends XtalElement {
     this.propUp([guid]);
     this._masterListId = anySelf[masterListKey]
       ? (anySelf[masterListKey] as string)
-      : "yv8uy";
+      : "9b551c11-9187-11ea-bb21-cdd00df441ba";
     if (!(<any>self)[this._masterListId]) {
 
-      appendTag(document.head, 'purr-sist-myjson',
+      appendTag(document.head, 'purr-sist-jsonblob',
         [{}, {}, {
           id: this._masterListId,
+          //write: true,
+          //new: true,
           read: true,
           "store-id": this._masterListId
-        } as PurrSistAttribs] as PEASettings
+        } as PurrSistAttribs] as PEASettings,{
+          host: this,
+        }
       )
     }
     super.connectedCallback();
   }
 }
-define(PublicChoiceMyJSON);
+define(PublicChoiceJsonBlob);
+
+extend({
+  name:'to-frappe-chart-data',
+  valFromEvent: e => {
+    debugger;
+    // const labels = [];
+    // for (const key in data) {
+    //     if (key.startsWith('_')) continue;
+    //     labels.push(key);
+    // }
+    // if (labels.length === 0) return;
+    // const fd = {
+    //     title: 'Votes',
+    //     data: {
+    //         labels: labels,
+    //         datasets: [
+    //             {
+    //                 name: "Votes",
+    //                 color: "light-blue",
+    //                 values: labels.map(key => isNaN(data[key]) ? 0 : data[key])
+    //             }
+    //         ]
+    //     },
+    //     "type": "bar",
+    //     "height": 250,
+    //     "isNavigable": true
+    // };
+    // //console.log(fd);
+    // (<any>this).data = fd;
+  }
+})

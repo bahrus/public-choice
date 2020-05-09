@@ -7,16 +7,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "node node_modules/xtal-test/serve.js",
-    "start": "es-dev-server --app-index demo/dev-mwc.html --node-resolve --watch --open"
+    "start": "es-dev-server --app-index demo/dev.html --node-resolve --watch --open"
   },
   "dependencies": {
     "xtal-frappe-chart": "0.0.70",
-    "if-diff": "0.0.43",
+    "if-diff": "0.0.44",
     "slot-bot": "0.0.5",
     "p-et-alia": "0.0.74",
-    "purr-sist": "0.0.60",
-    "trans-render": "0.0.168",
-    "xtal-element": "0.0.123",
+    "purr-sist": "0.0.62",
+    "trans-render": "0.0.172",
+    "xtal-element": "0.0.125",
     "xtal-radio-group-md": "0.0.4",
     "xtal-sip": "0.0.97"
   },
