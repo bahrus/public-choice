@@ -15,7 +15,7 @@ const mainTemplate = createTemplate(/* html */ `
     <section role=question>
         <slot name=question></slot>
     </section>
-    <!-- Read from local storage whether user has voted already. store-id set from guid property in _linkToGuid().-->
+    <!-- Read from local storage whether user has voted already. -->
     <purr-sist-idb disabled data-role=getUserVoteStatus db-name=pc_vote store-name=user_status read -store-id></purr-sist-idb>
     <!-- If already voted, hide options and display the results and vice versa -->
     <p-d on=value-changed to=if-diff[-lhs] m=2 skip-init></p-d>
@@ -29,16 +29,16 @@ const mainTemplate = createTemplate(/* html */ `
     <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
     <p-d on=value-changed to=[-new-vote] m=1 skip-init></p-d>
     <p-d-x-mark-voted on=value-changed to=[-new-val] m=1 skip-init></p-d-x-mark-voted>
-    <!-- Store whether person already voted.  Put in local storage -->
+    <!-- Store whether person already voted.  Put in local storage. -->
     <purr-sist-idb write db-name=pc_vote -master-list-id  -store-id store-name=user_status -new-val></purr-sist-idb>
     
     
-    <!-- Retrieve vote tally from jsonblob detail record linked -->
+    <!-- Retrieve vote tally from jsonblob detail record. -->
     <purr-sist-jsonblob read -guid -master-list-id ></purr-sist-jsonblob>
-    <!-- Initialize writer to current value TODO: synchronize with other votes --> 
+    <!-- Initialize writer to current value. --> 
     <p-d on=value-changed prop=value></p-d>
-    <!-- Persist vote to jsonblob detail record linked (via updateContext) to master list created in connection callback -->
-    <purr-sist-votes-to-json-blob -master-list-id write -guid -new-vote></purr-sist-votes-to-json-blob>
+    <!-- Persist vote to jsonblob detail record linked to master list. -->
+    <purr-sist-votes-to-jsonblob -master-list-id write -guid -new-vote></purr-sist-votes-to-jsonblob>
 
 
 
@@ -167,7 +167,7 @@ extend({
 });
 class PurrSistVotesToJsonBlob extends PurrSistJsonBlob {
     static get is() {
-        return 'purr-sist-votes-to-json-blob';
+        return 'purr-sist-votes-to-jsonblob';
     }
     ;
     get newVote() {
