@@ -17,7 +17,7 @@
     "purr-sist": "0.0.62",
     "trans-render": "0.0.172",
     "xtal-element": "0.0.125",
-    "xtal-radio-group-md": "0.0.5",
+    "xtal-radio-group-md": "0.0.6",
     "xtal-sip": "0.0.97"
   },
   "devDependencies": {
