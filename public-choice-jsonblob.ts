@@ -19,7 +19,8 @@ const mainTemplate = createTemplate(/* html */ `
         <slot name=question></slot>
     </section>
     <!-- Read from local storage whether user has voted already. -->
-    <purr-sist-idb disabled data-role=getUserVoteStatus db-name=pc_vote store-name=user_status read -store-id></purr-sist-idb>
+    <purr-sist-idb read db-name=pc_vote store-name=user_status -store-id disabled></purr-sist-idb>
+
     <!-- If already voted, hide options and display the results and vice versa -->
     <p-d on=value-changed to=if-diff[-lhs] m=2 skip-init></p-d>
     <if-diff if -lhs not_equals rhs=voted data-key-name=allowVoting m=1></if-diff>
@@ -29,9 +30,9 @@ const mainTemplate = createTemplate(/* html */ `
       <!-- Options to vote on, passed in via light children.  -->
       <slot name=options></slot>
     </xtal-radio-group-md>
-    <!-- Pass vote to purr-sist-*[write] elements for persisting.  -->
-    <p-d on=value-changed to=[-new-vote] m=1 skip-init></p-d>
-    <p-d-x-mark-voted on=value-changed to=[-new-val] m=1 skip-init></p-d-x-mark-voted>
+    <!-- Pass vote to purr-sist-* elements for persisting.  -->
+    <p-d-x-mark-voted on=value-changed to=purr-sist-idb[-new-val] m=1 skip-init></p-d-x-mark-voted>
+    <p-d-x-increment-vote on=value-changed to=purr-sist-jsonblob[-new-val] m=1 skip-init></p-d-x-increment-vote>
     <!-- Store whether person already voted.  Put in local storage. -->
     <purr-sist-idb write db-name=pc_vote -master-list-id  -store-id store-name=user_status -new-val></purr-sist-idb>
     
@@ -41,7 +42,7 @@ const mainTemplate = createTemplate(/* html */ `
     <!-- Initialize writer to current value. --> 
     <p-d on=value-changed prop=value></p-d>
     <!-- Persist vote to jsonblob detail record linked to master list. -->
-    <purr-sist-votes-to-jsonblob -master-list-id write -guid -new-vote></purr-sist-votes-to-jsonblob>
+    <purr-sist-jsonblob -master-list-id write -guid -new-val></purr-sist-jsonblob>
 
 
 
@@ -179,20 +180,14 @@ extend({
     };
     return fd;
   }
-})
+});
 
-
-class PurrSistVotesToJsonBlob extends PurrSistJsonBlob{
-  static get is(){
-    return 'purr-sist-votes-to-jsonblob';
-  };
-  _newVote!: string
-  get newVote(){
-    return this._newVote;
-  }
-  set newVote(option: string){
-    this._newVote = option;
-    let newVal = this.value;
+extend({
+  name:'increment-vote',
+  valFromEvent: function(e: Event){
+    const option = (<any>e).detail!.value;
+    const match = (<any>this).getMatches((<any>this)._pdNavDown)[0];
+    let newVal = match.value;
     if(typeof newVal !== 'object'){
       newVal = {};
     }
@@ -201,7 +196,8 @@ class PurrSistVotesToJsonBlob extends PurrSistJsonBlob{
     }else{
       newVal[option]++;
     }
-    this.newVal = newVal;
+    return newVal;
   }
-}
-define(PurrSistVotesToJsonBlob);
+})
+
+
