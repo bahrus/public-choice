@@ -60,19 +60,13 @@ export class PublicChoiceJsonBlob extends XtalElement {
         this.updateTransforms = [
             ({ guid }) => ({
                 main: {
-                    '[-store-id]': ({ target }) => {
-                        target.storeId = guid;
-                    },
-                    '[-guid]': ({ target }) => {
-                        target.guid = guid;
-                    }
+                    '[-store-id]': guid,
+                    '[-guid]': guid,
                 }
             }),
             ({ masterListId }) => ({
                 main: {
-                    '[-master-list-id]': ({ target }) => {
-                        target.masterListId = '/' + masterListId;
-                    }
+                    '[-master-list-id]': '/' + masterListId
                 }
             })
         ];

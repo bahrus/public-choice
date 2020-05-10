@@ -2,9 +2,8 @@ import { XtalElement, SelectiveUpdate } from "xtal-element/XtalElement.js";
 import { createTemplate } from "trans-render/createTemplate.js";
 import { define } from "trans-render/define.js";
 import { PurrSistAttribs} from "purr-sist/purr-sist.js";
-import { decorate } from "trans-render/decorate.js";
 import { appendTag } from "trans-render/appendTag.js";
-import { DecorateArgs, TransformRules, PEASettings  } from "trans-render/types.d.js";
+import { TransformRules, PEASettings  } from "trans-render/types.d.js";
 import {extend} from 'p-et-alia/p-d-x.js';
 import { PurrSistJsonBlob } from 'purr-sist/purr-sist-jsonblob';
 import('if-diff/if-diff.js');
@@ -74,21 +73,14 @@ export class PublicChoiceJsonBlob extends XtalElement {
   updateTransforms = [
     ({guid} : PublicChoiceJsonBlob) => ({
       main:{
-        '[-store-id]': ({target}) =>{
-          (<any>target).storeId = guid;
-        },
-        '[-guid]': ({target}) =>{
-          (<any>target).guid = guid;
-        }
+        '[-store-id]': guid, 
+        '[-guid]': guid,
       }
     }) as TransformRules,
     ({masterListId} : PublicChoiceJsonBlob) =>({
       main:{
-        '[-master-list-id]': ({target}) =>{
-          (<any>target).masterListId = '/' + masterListId;
-        }
+        '[-master-list-id]': '/' + masterListId
       }
-
     })
   ] as SelectiveUpdate[];
 
