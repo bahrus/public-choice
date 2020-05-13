@@ -1,8 +1,8 @@
-import { XtalElement } from "xtal-element/XtalElement.js";
+import { XtalElement, define } from "xtal-element/XtalElement.js";
 import { createTemplate } from "trans-render/createTemplate.js";
-import { define } from "trans-render/define.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { extend } from 'p-et-alia/p-d-x.js';
+import 'purr-sist/purr-sist-jsonblob';
 import('if-diff/if-diff.js');
 import('purr-sist/purr-sist-idb.js');
 import('xtal-radio-group-md/xtal-radio-group-md.js');
@@ -75,7 +75,7 @@ export class PublicChoiceJsonBlob extends XtalElement {
         return 'public-choice-jsonblob';
     }
     get readyToInit() {
-        return this._guid !== undefined;
+        return this.guid !== undefined;
     }
     get masterListId() {
         return this._masterListId;
@@ -83,23 +83,6 @@ export class PublicChoiceJsonBlob extends XtalElement {
     set masterListId(nv) {
         this._masterListId = nv;
         this.onPropsChange('masterListId');
-    }
-    get guid() {
-        return this._guid;
-    }
-    set guid(nv) {
-        this.attr(guid, nv);
-    }
-    attributeChangedCallback(n, ov, nv) {
-        switch (n) {
-            case guid:
-                this._guid = nv;
-                break;
-        }
-        super.attributeChangedCallback(n, ov, nv);
-    }
-    static get observedAttributes() {
-        return super.observedAttributes.concat([guid]);
     }
     connectedCallback() {
         this.propUp([guid]);
@@ -110,8 +93,6 @@ export class PublicChoiceJsonBlob extends XtalElement {
         if (!self[masterListId]) {
             appendTag(document.head, 'purr-sist-jsonblob', [{}, {}, {
                     id: masterListId,
-                    //write: true,
-                    //new: true,
                     read: true,
                     "store-id": masterListId
                 }], {
@@ -121,6 +102,10 @@ export class PublicChoiceJsonBlob extends XtalElement {
         this.masterListId = masterListId;
     }
 }
+PublicChoiceJsonBlob.attributeProps = ({ disabled, guid }) => ({
+    boolean: [disabled],
+    string: [guid],
+});
 define(PublicChoiceJsonBlob);
 extend({
     name: 'mark-voted',

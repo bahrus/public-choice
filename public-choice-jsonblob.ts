@@ -1,11 +1,11 @@
-import { XtalElement, SelectiveUpdate } from "xtal-element/XtalElement.js";
+import { XtalElement, define } from "xtal-element/XtalElement.js";
+import { SelectiveUpdate, AttributeProps} from 'xtal-element/types.d.js';
 import { createTemplate } from "trans-render/createTemplate.js";
-import { define } from "trans-render/define.js";
 import { PurrSistAttribs} from "purr-sist/purr-sist.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { TransformRules, PEASettings  } from "trans-render/types.d.js";
 import {extend} from 'p-et-alia/p-d-x.js';
-import { PurrSistJsonBlob } from 'purr-sist/purr-sist-jsonblob';
+import 'purr-sist/purr-sist-jsonblob';
 import('if-diff/if-diff.js');
 import('purr-sist/purr-sist-idb.js');
 import('xtal-radio-group-md/xtal-radio-group-md.js');
@@ -61,9 +61,14 @@ export class PublicChoiceJsonBlob extends XtalElement {
   static get is() {
     return 'public-choice-jsonblob';
   }
+
+  static attributeProps = ({disabled, guid} : PublicChoiceJsonBlob) => ({
+      boolean: [disabled],
+      string: [guid],
+  }  as AttributeProps);
   
   get readyToInit() {
-    return this._guid !== undefined;
+    return this.guid !== undefined;
   }
   readyToRender = true;
 
@@ -96,29 +101,7 @@ export class PublicChoiceJsonBlob extends XtalElement {
     this.onPropsChange('masterListId');
   }
 
-
-  _guid!: string;
-  get guid() {
-    return this._guid;
-  }
-  set guid(nv) {
-    this.attr(guid, nv);
-  }
-
-  attributeChangedCallback(n: string, ov: string, nv: string) {
-    switch (n) {
-      case guid:
-        this._guid = nv;
-        break;
-    }
-    super.attributeChangedCallback(n, ov, nv);
-  }
-
-
-
-  static get observedAttributes() {
-    return super.observedAttributes.concat([guid]);
-  }
+  guid: string | undefined;
 
   connectedCallback() {
     this.propUp([guid]);
@@ -131,8 +114,6 @@ export class PublicChoiceJsonBlob extends XtalElement {
       appendTag(document.head, 'purr-sist-jsonblob',
         [{}, {}, {
           id: masterListId,
-          //write: true,
-          //new: true,
           read: true,
           "store-id": masterListId
         } as PurrSistAttribs] as PEASettings,{
