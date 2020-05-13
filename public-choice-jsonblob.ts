@@ -126,6 +126,12 @@ export class PublicChoiceJsonBlob extends XtalElement {
 }
 define(PublicChoiceJsonBlob);
 
+declare global {
+  interface HTMLElementTagNameMap {
+      "public-choice-jsonblob": PublicChoiceJsonBlob,
+  }
+}
+
 extend({
   name:'mark-voted',
   valFromEvent: e=>{
@@ -162,6 +168,8 @@ extend({
     return fd;
   }
 });
+
+
 
 extend({
   name:'increment-vote',
