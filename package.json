@@ -13,10 +13,10 @@
     "xtal-frappe-chart": "0.0.70",
     "if-diff": "0.0.44",
     "slot-bot": "0.0.5",
-    "p-et-alia": "0.0.76",
+    "p-et-alia": "0.0.77",
     "purr-sist": "0.0.62",
-    "trans-render": "0.0.174",
-    "xtal-element": "0.0.132",
+    "trans-render": "0.0.177",
+    "xtal-element": "0.0.146",
     "xtal-radio-group-md": "0.0.6",
     "xtal-sip": "0.0.97"
   },
