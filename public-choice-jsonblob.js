@@ -85,7 +85,6 @@ export class PublicChoiceJsonBlob extends XtalElement {
         this.onPropsChange('masterListId');
     }
     connectedCallback() {
-        this.propUp([guid]);
         super.connectedCallback();
         const masterListId = anySelf[masterListKey]
             ? anySelf[masterListKey]
