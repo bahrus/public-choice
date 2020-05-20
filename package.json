@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "xtal-frappe-chart": "0.0.70",
-    "if-diff": "0.0.46",
+    "if-diff": "0.0.47",
     "slot-bot": "0.0.5",
     "p-et-alia": "0.0.78",
     "purr-sist": "0.0.62",
     "trans-render": "0.0.177",
-    "xtal-element": "0.0.154",
+    "xtal-element": "0.0.155",
     "xtal-radio-group-md": "0.0.6",
     "xtal-sip": "0.0.97"
   },
