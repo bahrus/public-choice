@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
+    <style>
+      public-choice-jsonblob:not([data-upgraded]) datalist{
+        display: block;
+      }
+      public-choice-jsonblob:not([data-upgraded]) [value]::before {
+        content: attr(value) " ";
+      }
+    </style>
   </head>
   <body>
     <div>

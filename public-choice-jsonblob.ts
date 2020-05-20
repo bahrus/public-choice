@@ -104,7 +104,6 @@ export class PublicChoiceJsonBlob extends XtalElement {
   guid: string | undefined;
 
   connectedCallback() {
-    this.propUp([guid]);
     super.connectedCallback();
     const masterListId = anySelf[masterListKey]
       ? (anySelf[masterListKey] as string)

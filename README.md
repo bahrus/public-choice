@@ -9,6 +9,19 @@
 
 Preliminary public polling web component.  Do Not Use In Production.
 
+To progressively render the options before the element has upgraded, use a style such as:
+
+```html
+    <style>
+      public-choice-jsonblob:not([data-upgraded]) datalist{
+        display: block;
+      }
+      public-choice-jsonblob:not([data-upgraded]) [value]::before {
+        content: attr(value) " ";
+      }
+    </style>
+```
+
 [Demo](https://bahrus.github.io/public-choice/)
 
 Markup for Demo:
