@@ -1,7 +1,7 @@
 import { XtalElement, define } from "xtal-element/XtalElement.js";
 import { SelectiveUpdate, AttributeProps} from 'xtal-element/types.d.js';
 import { createTemplate } from "trans-render/createTemplate.js";
-import { PurrSistAttribs} from "purr-sist/purr-sist.js";
+//import { PurrSistAttribs} from "purr-sist/purr-sist.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { TransformRules, PEASettings  } from "trans-render/types.d.js";
 import {extend} from 'p-et-alia/p-d-x.js';
@@ -63,8 +63,8 @@ export class PublicChoiceJsonBlob extends XtalElement {
   }
 
   static attributeProps = ({disabled, guid} : PublicChoiceJsonBlob) => ({
-      boolean: [disabled],
-      string: [guid],
+      bool: [disabled],
+      str: [guid],
   }  as AttributeProps);
   
   get readyToInit() {
@@ -115,7 +115,7 @@ export class PublicChoiceJsonBlob extends XtalElement {
           id: masterListId,
           read: true,
           "store-id": masterListId
-        } as PurrSistAttribs] as PEASettings,{
+        }] as PEASettings,{
           host: this,
         }
       )

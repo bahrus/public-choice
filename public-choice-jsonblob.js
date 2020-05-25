@@ -1,5 +1,6 @@
 import { XtalElement, define } from "xtal-element/XtalElement.js";
 import { createTemplate } from "trans-render/createTemplate.js";
+//import { PurrSistAttribs} from "purr-sist/purr-sist.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { extend } from 'p-et-alia/p-d-x.js';
 import 'purr-sist/purr-sist-jsonblob';
@@ -102,8 +103,8 @@ export class PublicChoiceJsonBlob extends XtalElement {
     }
 }
 PublicChoiceJsonBlob.attributeProps = ({ disabled, guid }) => ({
-    boolean: [disabled],
-    string: [guid],
+    bool: [disabled],
+    str: [guid],
 });
 define(PublicChoiceJsonBlob);
 extend({
