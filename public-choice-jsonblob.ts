@@ -62,21 +62,12 @@ export class PublicChoiceJsonBlob extends XtalElement {
     return 'public-choice-jsonblob';
   }
 
-  static attributeProps = ({disabled, guid} : PublicChoiceJsonBlob) => ({
+  static attributeProps = ({disabled, guid, masterListId} : PublicChoiceJsonBlob) => ({
       bool: [disabled],
-      str: [guid],
+      str: [guid, masterListId],
   }  as AttributeProps);
-  
-  get readyToInit() {
-    return this.guid !== undefined;
-  }
-  readyToRender = true;
 
-  mainTemplate = mainTemplate;
-
-  initTransform = {} as TransformRules;
-
-  updateTransforms = [
+  static updateTransforms  = [
     ({guid} : PublicChoiceJsonBlob) => ({
       main:{
         '[-store-id]': guid, 
@@ -88,18 +79,20 @@ export class PublicChoiceJsonBlob extends XtalElement {
         '[-master-list-id]': '/' + masterListId
       }
     })
-  ] as SelectiveUpdate[];
-
-
-
-  _masterListId!: string;
-  get masterListId(){
-    return this._masterListId;
+  ];
+  
+  get readyToInit() {
+    return this.guid !== undefined;
   }
-  set masterListId(nv){
-    this._masterListId = nv;
-    this.onPropsChange('masterListId');
-  }
+  readyToRender = true;
+
+  mainTemplate = mainTemplate;
+
+  initTransform = {} as TransformRules;
+
+  updateTransforms = PublicChoiceJsonBlob.updateTransforms;
+
+  masterListId!: string;
 
   guid: string | undefined;
 

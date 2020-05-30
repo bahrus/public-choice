@@ -58,32 +58,13 @@ export class PublicChoiceJsonBlob extends XtalElement {
         this.readyToRender = true;
         this.mainTemplate = mainTemplate;
         this.initTransform = {};
-        this.updateTransforms = [
-            ({ guid }) => ({
-                main: {
-                    '[-store-id]': guid,
-                    '[-guid]': guid,
-                }
-            }),
-            ({ masterListId }) => ({
-                main: {
-                    '[-master-list-id]': '/' + masterListId
-                }
-            })
-        ];
+        this.updateTransforms = PublicChoiceJsonBlob.updateTransforms;
     }
     static get is() {
         return 'public-choice-jsonblob';
     }
     get readyToInit() {
         return this.guid !== undefined;
-    }
-    get masterListId() {
-        return this._masterListId;
-    }
-    set masterListId(nv) {
-        this._masterListId = nv;
-        this.onPropsChange('masterListId');
     }
     connectedCallback() {
         super.connectedCallback();
@@ -102,10 +83,23 @@ export class PublicChoiceJsonBlob extends XtalElement {
         this.masterListId = masterListId;
     }
 }
-PublicChoiceJsonBlob.attributeProps = ({ disabled, guid }) => ({
+PublicChoiceJsonBlob.attributeProps = ({ disabled, guid, masterListId }) => ({
     bool: [disabled],
-    str: [guid],
+    str: [guid, masterListId],
 });
+PublicChoiceJsonBlob.updateTransforms = [
+    ({ guid }) => ({
+        main: {
+            '[-store-id]': guid,
+            '[-guid]': guid,
+        }
+    }),
+    ({ masterListId }) => ({
+        main: {
+            '[-master-list-id]': '/' + masterListId
+        }
+    })
+];
 define(PublicChoiceJsonBlob);
 extend({
     name: 'mark-voted',
