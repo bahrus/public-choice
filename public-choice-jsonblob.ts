@@ -11,7 +11,7 @@ import('purr-sist/purr-sist-idb.js');
 import('xtal-radio-group-md/xtal-radio-group-md.js');
 import 'xtal-frappe-chart/xtal-frappe-chart.js';
 
-export const masterListKey = Symbol("masterListKey");
+export const storeRegistryKey = Symbol("storeRegistryKey");
 const anySelf = <any>self;
 const mainTemplate = createTemplate(/* html */ `
 <main>
@@ -34,15 +34,15 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d-x-mark-voted on=value-changed to=purr-sist-idb[-new-val] m=1 skip-init></p-d-x-mark-voted>
     <p-d-x-increment-vote on=value-changed to=purr-sist-jsonblob[-new-val] m=1 skip-init></p-d-x-increment-vote>
     <!-- Store whether person already voted.  Put in local storage. -->
-    <purr-sist-idb write db-name=pc_vote -master-list-id  -store-id store-name=user_status -new-val></purr-sist-idb>
+    <purr-sist-idb write db-name=pc_vote -store-registry-id  -store-id store-name=user_status -new-val></purr-sist-idb>
     
     
     <!-- Retrieve vote tally from jsonblob detail record. -->
-    <purr-sist-jsonblob read -guid -master-list-id ></purr-sist-jsonblob>
+    <purr-sist-jsonblob read -guid -store-registry-id ></purr-sist-jsonblob>
     <!-- Initialize writer to current value. --> 
     <p-d on=value-changed prop=value></p-d>
-    <!-- Persist vote to jsonblob detail record linked to master list. -->
-    <purr-sist-jsonblob -master-list-id write -guid -new-val></purr-sist-jsonblob>
+    <!-- Persist vote to jsonblob store linked to store registry. -->
+    <purr-sist-jsonblob -store-registry-id write -guid -new-val></purr-sist-jsonblob>
 
 
 
@@ -62,9 +62,9 @@ export class PublicChoiceJsonBlob extends XtalElement {
     return 'public-choice-jsonblob';
   }
 
-  static attributeProps = ({disabled, guid, masterListId} : PublicChoiceJsonBlob) => ({
+  static attributeProps = ({disabled, guid, storeRegistryId} : PublicChoiceJsonBlob) => ({
       bool: [disabled],
-      str: [guid, masterListId],
+      str: [guid, storeRegistryId],
   }  as AttributeProps);
 
   static updateTransforms  = [
@@ -74,9 +74,9 @@ export class PublicChoiceJsonBlob extends XtalElement {
         '[-guid]': guid,
       }
     }) as TransformRules,
-    ({masterListId} : PublicChoiceJsonBlob) =>({
+    ({storeRegistryId} : PublicChoiceJsonBlob) =>({
       main:{
-        '[-master-list-id]': '/' + masterListId
+        '[-store-registry-id]': '/' + storeRegistryId
       }
     })
   ];
@@ -92,28 +92,28 @@ export class PublicChoiceJsonBlob extends XtalElement {
 
   updateTransforms = PublicChoiceJsonBlob.updateTransforms;
 
-  masterListId!: string;
+  storeRegistryId!: string;
 
   guid: string | undefined;
 
   connectedCallback() {
     super.connectedCallback();
-    const masterListId = anySelf[masterListKey]
-      ? (anySelf[masterListKey] as string)
+    const storeRegistryId = anySelf[storeRegistryKey]
+      ? (anySelf[storeRegistryKey] as string)
       : "9b551c11-9187-11ea-bb21-cdd00df441ba";
-    if (!(<any>self)[masterListId]) {
+    if (!(<any>self)[storeRegistryId]) {
 
       appendTag(document.head, 'purr-sist-jsonblob',
         [{}, {}, {
-          id: masterListId,
+          id: storeRegistryId,
           read: true,
-          "store-id": masterListId
+          "store-id": storeRegistryId
         }] as PEASettings,{
           host: this,
         }
       )
     }
-    this.masterListId = masterListId;
+    this.storeRegistryId = storeRegistryId;
   }
 }
 define(PublicChoiceJsonBlob);

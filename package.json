@@ -10,18 +10,18 @@
     "start": "es-dev-server --app-index demo/dev.html --node-resolve --watch --open"
   },
   "dependencies": {
-    "xtal-frappe-chart": "0.0.71",
-    "if-diff": "0.0.51",
-    "p-et-alia": "0.0.86",
-    "purr-sist": "0.0.66",
-    "trans-render": "0.0.182",
-    "xtal-element": "0.0.165",
+    "xtal-frappe-chart": "0.0.72",
+    "if-diff": "0.0.60",
+    "p-et-alia": "0.0.99",
+    "purr-sist": "0.0.69",
+    "trans-render": "0.0.193",
+    "xtal-element": "0.0.200",
     "xtal-radio-group-md": "0.0.6"
   },
   "devDependencies": {
     "@webcomponents/webcomponentsjs": "2.4.3",
-    "xtal-test": "0.0.44",
-    "es-dev-server": "1.47.0"
+    "xtal-test": "0.0.46",
+    "es-dev-server": "1.55.0"
   },
   "repository": {
     "type": "git",

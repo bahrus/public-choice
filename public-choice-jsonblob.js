@@ -8,7 +8,7 @@ import('if-diff/if-diff.js');
 import('purr-sist/purr-sist-idb.js');
 import('xtal-radio-group-md/xtal-radio-group-md.js');
 import 'xtal-frappe-chart/xtal-frappe-chart.js';
-export const masterListKey = Symbol("masterListKey");
+export const storeRegistryKey = Symbol("storeRegistryKey");
 const anySelf = self;
 const mainTemplate = createTemplate(/* html */ `
 <main>
@@ -31,15 +31,15 @@ const mainTemplate = createTemplate(/* html */ `
     <p-d-x-mark-voted on=value-changed to=purr-sist-idb[-new-val] m=1 skip-init></p-d-x-mark-voted>
     <p-d-x-increment-vote on=value-changed to=purr-sist-jsonblob[-new-val] m=1 skip-init></p-d-x-increment-vote>
     <!-- Store whether person already voted.  Put in local storage. -->
-    <purr-sist-idb write db-name=pc_vote -master-list-id  -store-id store-name=user_status -new-val></purr-sist-idb>
+    <purr-sist-idb write db-name=pc_vote -store-registry-id  -store-id store-name=user_status -new-val></purr-sist-idb>
     
     
     <!-- Retrieve vote tally from jsonblob detail record. -->
-    <purr-sist-jsonblob read -guid -master-list-id ></purr-sist-jsonblob>
+    <purr-sist-jsonblob read -guid -store-registry-id ></purr-sist-jsonblob>
     <!-- Initialize writer to current value. --> 
     <p-d on=value-changed prop=value></p-d>
-    <!-- Persist vote to jsonblob detail record linked to master list. -->
-    <purr-sist-jsonblob -master-list-id write -guid -new-val></purr-sist-jsonblob>
+    <!-- Persist vote to jsonblob store linked to store registry. -->
+    <purr-sist-jsonblob -store-registry-id write -guid -new-val></purr-sist-jsonblob>
 
 
 
@@ -52,54 +52,58 @@ const mainTemplate = createTemplate(/* html */ `
 </main>
 `);
 const guid = "guid";
-export class PublicChoiceJsonBlob extends XtalElement {
-    constructor() {
-        super(...arguments);
-        this.readyToRender = true;
-        this.mainTemplate = mainTemplate;
-        this.initTransform = {};
-        this.updateTransforms = PublicChoiceJsonBlob.updateTransforms;
-    }
-    static get is() {
-        return 'public-choice-jsonblob';
-    }
-    get readyToInit() {
-        return this.guid !== undefined;
-    }
-    connectedCallback() {
-        super.connectedCallback();
-        const masterListId = anySelf[masterListKey]
-            ? anySelf[masterListKey]
-            : "9b551c11-9187-11ea-bb21-cdd00df441ba";
-        if (!self[masterListId]) {
-            appendTag(document.head, 'purr-sist-jsonblob', [{}, {}, {
-                    id: masterListId,
-                    read: true,
-                    "store-id": masterListId
-                }], {
-                host: this,
-            });
+let PublicChoiceJsonBlob = /** @class */ (() => {
+    class PublicChoiceJsonBlob extends XtalElement {
+        constructor() {
+            super(...arguments);
+            this.readyToRender = true;
+            this.mainTemplate = mainTemplate;
+            this.initTransform = {};
+            this.updateTransforms = PublicChoiceJsonBlob.updateTransforms;
         }
-        this.masterListId = masterListId;
+        static get is() {
+            return 'public-choice-jsonblob';
+        }
+        get readyToInit() {
+            return this.guid !== undefined;
+        }
+        connectedCallback() {
+            super.connectedCallback();
+            const storeRegistryId = anySelf[storeRegistryKey]
+                ? anySelf[storeRegistryKey]
+                : "9b551c11-9187-11ea-bb21-cdd00df441ba";
+            if (!self[storeRegistryId]) {
+                appendTag(document.head, 'purr-sist-jsonblob', [{}, {}, {
+                        id: storeRegistryId,
+                        read: true,
+                        "store-id": storeRegistryId
+                    }], {
+                    host: this,
+                });
+            }
+            this.storeRegistryId = storeRegistryId;
+        }
     }
-}
-PublicChoiceJsonBlob.attributeProps = ({ disabled, guid, masterListId }) => ({
-    bool: [disabled],
-    str: [guid, masterListId],
-});
-PublicChoiceJsonBlob.updateTransforms = [
-    ({ guid }) => ({
-        main: {
-            '[-store-id]': guid,
-            '[-guid]': guid,
-        }
-    }),
-    ({ masterListId }) => ({
-        main: {
-            '[-master-list-id]': '/' + masterListId
-        }
-    })
-];
+    PublicChoiceJsonBlob.attributeProps = ({ disabled, guid, storeRegistryId }) => ({
+        bool: [disabled],
+        str: [guid, storeRegistryId],
+    });
+    PublicChoiceJsonBlob.updateTransforms = [
+        ({ guid }) => ({
+            main: {
+                '[-store-id]': guid,
+                '[-guid]': guid,
+            }
+        }),
+        ({ storeRegistryId }) => ({
+            main: {
+                '[-store-registry-id]': '/' + storeRegistryId
+            }
+        })
+    ];
+    return PublicChoiceJsonBlob;
+})();
+export { PublicChoiceJsonBlob };
 define(PublicChoiceJsonBlob);
 extend({
     name: 'mark-voted',
