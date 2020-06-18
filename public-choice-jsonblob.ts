@@ -1,7 +1,6 @@
 import { XtalElement, define } from "xtal-element/XtalElement.js";
 import { SelectiveUpdate, AttributeProps} from 'xtal-element/types.d.js';
 import { createTemplate } from "trans-render/createTemplate.js";
-//import { PurrSistAttribs} from "purr-sist/purr-sist.js";
 import { appendTag } from "trans-render/appendTag.js";
 import { TransformRules, PEASettings  } from "trans-render/types.d.js";
 import {extend} from 'p-et-alia/p-d-x.js';
