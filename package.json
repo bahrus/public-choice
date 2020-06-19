@@ -13,9 +13,9 @@
     "xtal-frappe-chart": "0.0.72",
     "if-diff": "0.0.61",
     "p-et-alia": "0.0.104",
-    "purr-sist": "0.0.69",
-    "trans-render": "0.0.199",
-    "xtal-element": "0.0.203",
+    "purr-sist": "0.0.70",
+    "trans-render": "0.0.206",
+    "xtal-element": "0.0.212",
     "xtal-radio-group-md": "0.0.6"
   },
   "devDependencies": {
