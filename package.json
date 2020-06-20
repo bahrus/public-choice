@@ -12,10 +12,10 @@
   "dependencies": {
     "xtal-frappe-chart": "0.0.72",
     "if-diff": "0.0.61",
-    "p-et-alia": "0.0.104",
-    "purr-sist": "0.0.70",
-    "trans-render": "0.0.206",
-    "xtal-element": "0.0.212",
+    "p-et-alia": "0.0.105",
+    "purr-sist": "0.0.71",
+    "trans-render": "0.0.208",
+    "xtal-element": "0.0.215",
     "xtal-radio-group-md": "0.0.6"
   },
   "devDependencies": {
