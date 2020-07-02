@@ -22,7 +22,7 @@ const mainTemplate = createTemplate(/* html */ `
     <if-diff if -lhs not_equals rhs=voted data-key-name=allowVoting m=1></if-diff>
     <if-diff if -lhs equals rhs=voted data-key-name=allowViewResults m=2></if-diff>
 
-    <xtal-radio-group-md name=pronoun data-allow-voting=-1 disabled=2>
+    <xtal-radio-group-md name=voteOptions data-allow-voting=-1 disabled=2>
       <!-- Options to vote on, passed in via light children.  -->
       <slot name=options></slot>
     </xtal-radio-group-md>
@@ -50,7 +50,6 @@ const mainTemplate = createTemplate(/* html */ `
     
 </main>
 `);
-const guid = "guid";
 let PublicChoiceJsonBlob = /** @class */ (() => {
     class PublicChoiceJsonBlob extends XtalElement {
         constructor() {
@@ -59,9 +58,6 @@ let PublicChoiceJsonBlob = /** @class */ (() => {
             this.mainTemplate = mainTemplate;
             this.initTransform = {};
             this.updateTransforms = PublicChoiceJsonBlob.updateTransforms;
-        }
-        static get is() {
-            return 'public-choice-jsonblob';
         }
         get readyToInit() {
             return this.guid !== undefined;
@@ -83,6 +79,7 @@ let PublicChoiceJsonBlob = /** @class */ (() => {
             this.storeRegistryId = storeRegistryId;
         }
     }
+    PublicChoiceJsonBlob.is = 'public-choice-jsonblob';
     PublicChoiceJsonBlob.attributeProps = ({ disabled, guid, storeRegistryId }) => ({
         bool: [disabled],
         str: [guid, storeRegistryId],
