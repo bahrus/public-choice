@@ -7,7 +7,7 @@
 
 # public-choice Web Component
 
-Preliminary public polling web component.  Do Not Use In Production.
+Preliminary public polling web component.  Uses plurality voting.  [Do Not Use (Plurality Voting) In Production!!](https://shihn.ca/posts/2020/voting-systems/)
 
 To progressively render the options before the element has upgraded, use a style such as:
 
